@@ -1,0 +1,71 @@
+body, html {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #1D2600;
+  color: #A5B594;
+}
+
+header {
+  border-bottom: 1px solid #36413E;
+}
+
+#browser-js-warning {
+  background-color: #600;
+  color: #f00;
+  padding: 0.5em;
+  text-align: center;
+  display: none;
+}
+#browser-js-warning a {
+  color: #a00;
+}
+
+nav {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+
+nav a {
+  display: table-cell;
+  text-align: center;
+  border-right: 1px solid #36413E;
+  padding: 0.25em;
+  font-size: 1.25em;
+  text-decoration: none;
+}
+
+nav a:last-child {
+  border-right: none;
+}
+
+main {
+  padding: 5px;
+}
+
+a {
+  color: #588157;
+}
+
+code {
+  padding: 0.25em;
+  border-radius: 0.25em 0 0 0.25em;
+  background: linear-gradient(to right, #36413E 80%, 90%, #0000 95%);
+}
+
+pre code {
+  display: block;
+}
+
+footer {
+  border-top: 1px solid #36413E;
+}
+
+.eco-trustmark {
+  display: inline-block;
+  height: 1em;
+}
