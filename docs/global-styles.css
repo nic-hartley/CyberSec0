@@ -5,7 +5,7 @@ body, html {
 }
 
 body {
-  background-color: #1D2600;
+  background: linear-gradient(to right, #080808 90%, #1D2600);
   color: #A5B594;
 }
 
