@@ -8,4 +8,5 @@ edition = "2018"
 
 [dependencies]
 pulldown-cmark = { version = "0.6.0", default-features = false, features = ["simd"] }
-handlebars = "2.0.2"
+askama = "0.8.0"
+walkdir = "2.2.9"

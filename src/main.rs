@@ -1,53 +1,50 @@
-use std::fs::{self, File};
-use std::io::BufReader;
-use std::path::Path;
+use std::{fs, path::Path};
 
-struct Author {
-  name: String,
-  bio: String,
-  bio_url: String,
+extern crate askama;
+use askama::Template;
+
+extern crate walkdir;
+use walkdir::WalkDir;
+
+mod write_adapter;
+use write_adapter::WriteAdapter as WA;
+
+#[derive(Template)]
+#[template(path = "index.html")]
+struct Index;
+
+fn copy_statics(assets: &Path, out: &Path) {
+    let root = assets.join("static");
+    for entry in WalkDir::new(&root) {
+        let entry = entry.unwrap();
+        let from_path = entry.path();
+        let to_path = out.join(from_path.strip_prefix(&root).unwrap());
+        if from_path.is_dir() {
+            fs::create_dir_all(to_path).unwrap();
+        } else {
+            fs::copy(from_path, to_path).unwrap();
+        }
+    }
 }
 
-struct Post {
-  title: String,
-  tags: Vec<String>,
-  author: String,
-  body: String,
-  published: bool,
-  url: String,
-}
-
-fn title_to_url(title: &str) -> String {
-  let bad_char = |c: char| !c.is_ascii_alphanumeric() && c != '-';
-  title.replace(" ", "-").replace(bad_char, "").to_ascii_lowercase()
-}
-
-fn read_post(path: &Path) -> Option<Post> {
-  let file = fs::File::open(path).expect("Failed to read post {?:}", path);
-  let file = BufReader::new(file);
-  let lines = file.lines();
-  for line in lines {
-    
-  }
-  let mut body = String::new();
-  
+fn write_index(root: &Path) {
+    let index_out = fs::File::create(root.join("index.html")).unwrap();
+    Index.render_into(&mut WA::adapt(index_out)).unwrap();
 }
 
 fn main() {
-  // TODO arg parsing
-  let cwd = Path::new(".").canonicalize().expect("Could not open .");
-  let assets_path = cwd.join("./assets");
-  let posts_path = assets_path.join("posts");
-  let templates_path = assets_path.join("templates");
-  let output_path = cwd.join("docs");
+    let begin = std::time::Instant::now();
 
-  let posts: Vec<_> = fs::read_dir(posts_path)
-    .expect("Failed to open posts directory")
-    .map(|op| op.expect("Failed to open post"))
-    .filter_map(read_post)
-    .collect();
+    let root = Path::new(".");
+    let assets = root.join("assets");
+    let out = root.join("docs");
+    fs::create_dir_all(&out).unwrap();
+    fs::remove_dir_all(&out).unwrap();
+    fs::create_dir(&out).unwrap();
 
-  write_index(&output_path, &posts, &templates_path.join("index.html"));
-  write_posts(&output_path, &posts);
-  write_bios()
+    copy_statics(&assets, &out);
+    write_index(&out);
+
+    let end = std::time::Instant::now();
+    println!("Generation took {}us", (end - begin).as_micros());
 }

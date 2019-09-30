@@ -1,0 +1,15 @@
+{% extends "global.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+<h1>{{ title }}</h1>
+<div class="byline">by {{ author }} | {{ date }}</div>
+<ul class="tags">
+  {% for tag in tags %}
+    <li>{{ tag }}</li>
+  {% endfor %}
+</ul>
+
+{{ body | safe }}
+{% endblock %}
