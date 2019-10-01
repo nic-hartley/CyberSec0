@@ -3,9 +3,6 @@ use std::{
     path::Path,
 };
 
-extern crate askama;
-use askama::Template;
-
 extern crate walkdir;
 use walkdir::WalkDir;
 
@@ -15,14 +12,7 @@ use write_adapter::adapt;
 mod utils;
 use utils::*;
 
-struct Post {
-    id: String,
-    title: String,
-    author: String, // TODO: Get author info from bio
-    tags: Vec<String>,
-    body: String,
-    // TODO: `created` date automatically somehow?
-}
+mod templates;
 
 fn copy_statics(assets: &Path, out: &Path) {
     let root = assets.join("static");
@@ -38,13 +28,13 @@ fn copy_statics(assets: &Path, out: &Path) {
     }
 }
 
-fn get_posts(assets: &Path) -> Vec<Post> {
+fn get_posts(assets: &Path) -> Vec<templates::Post> {
     let mut posts = vec![];
     for post_file in fs::read_dir(assets.join("blog")).unwrap() {
         let post_file = post_file.unwrap().path();
         let id = post_file.file_stem().unwrap().to_str().unwrap().into();
         let (props, body) = parse_hmd_file(&post_file);
-        posts.push(Post {
+        posts.push(templates::Post {
             id,
             title: props["title"].clone(),
             author: props["author"].clone(),
@@ -55,32 +45,11 @@ fn get_posts(assets: &Path) -> Vec<Post> {
     posts
 }
 
-fn write_index(out: &Path, posts: &[Post]) {
-    #[derive(Template)]
-    #[template(path = "index.html")]
-    struct IndexPage<'a> {
-        posts: &'a [Post],
-    }
-
-    let index_out = fs::File::create(out.join("index.html")).unwrap();
-    IndexPage { posts }
-        .render_into(&mut adapt(index_out))
-        .unwrap();
-}
-
-fn write_posts(out: &Path, posts: Vec<Post>) {
-    #[derive(Template)]
-    #[template(path = "post.html")]
-    struct PostPage {
-        post: Post,
-    }
-
-    for post in posts.into_iter() {
-        let output_path = out.join("blog").join(&post.id).join("index.html");
-        fs::create_dir_all(output_path.parent().unwrap()).unwrap();
-        let output = fs::File::create(&output_path).unwrap();
-        PostPage { post }.render_into(&mut adapt(output)).unwrap();
-    }
+fn write_template<T: askama::Template>(template: T, path: &Path) {
+    fs::create_dir_all(path).unwrap();
+    let path = path.join("index.html");
+    let output = fs::File::create(path).unwrap();
+    template.render_into(&mut adapt(output)).unwrap();
 }
 
 fn main() {
@@ -96,8 +65,12 @@ fn main() {
     let posts = get_posts(&assets);
 
     copy_statics(&assets, &out);
-    write_index(&out, &posts);
-    write_posts(&out, posts);
+    write_template(templates::SiteRootPage, &out);
+    write_template(templates::BlogIndexPage { posts: &posts }, &out.join("blog"));
+    for post in posts.into_iter() {
+        let output_path = out.join("blog").join(&post.id);
+        write_template(templates::PostPage { post }, &output_path);
+    }
 
     let end = std::time::Instant::now();
     println!("Generation took {}us", (end - begin).as_micros());
