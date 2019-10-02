@@ -1,0 +1,10 @@
+{% extends "global.html" %}
+
+{% block title %}About {{ bio.name }}{% endblock title %}
+
+{% block body %}
+  <h1>{{ bio.name }}</h1>
+  <div>Email: {{ bio.email }}</div>
+  <div>Website: <a href="https://{{ bio.site }}">{{ bio.site }}</a></div> 
+  {{ bio.body|safe }}
+{% endblock %}

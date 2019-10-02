@@ -16,26 +16,26 @@ mod utils;
 use utils::*;
 
 #[derive(Debug)]
-struct Author {
+struct Bio {
     id: String,
     name: String,
     email: String,
     site: String,
-    bio: String,
+    body: String,
 }
 
-fn get_authors(assets: &Path) -> Vec<Author> {
+fn get_bios(assets: &Path) -> Vec<Bio> {
     let mut authors = vec![];
     for bio_file in fs::read_dir(assets.join("bios")).unwrap() {
         let bio_file = bio_file.unwrap().path();
         let id = bio_file.file_stem().unwrap().to_str().unwrap().into();
         let (props, body) = parse_hmd_file(&bio_file);
-        authors.push(Author {
+        authors.push(Bio {
             id,
             name: props["name"].clone(),
             email: props["email"].clone(),
             site: props["site"].clone(),
-            bio: body,
+            body,
         });
     }
     authors
@@ -45,13 +45,13 @@ fn get_authors(assets: &Path) -> Vec<Author> {
 struct Post<'a> {
     id: String,
     title: String,
-    author: &'a Author,
+    author: &'a Bio,
     tags: Vec<String>,
     body: String,
     // TODO: `created` date automatically somehow?
 }
 
-fn get_posts<'a>(assets: &Path, authors: &'a [Author]) -> Vec<Post<'a>> {
+fn get_posts<'a>(assets: &Path, authors: &'a [Bio]) -> Vec<Post<'a>> {
     let mut posts = vec![];
     for post_file in fs::read_dir(assets.join("blog")).unwrap() {
         let post_file = post_file.unwrap().path();
@@ -95,6 +95,12 @@ struct BlogIndexPage<'a, 'b> {
 }
 
 #[derive(Template)]
+#[template(path = "bio.html")]
+struct BioPage {
+    bio: Bio,
+}
+
+#[derive(Template)]
 #[template(path = "post.html")]
 struct PostPage<'a> {
     post: Post<'a>,
@@ -117,8 +123,8 @@ fn main() {
     fs::remove_dir_all(&out).unwrap();
     fs::create_dir(&out).unwrap();
 
-    let authors = get_authors(&assets);
-    let posts = get_posts(&assets, &authors);
+    let bios = get_bios(&assets);
+    let posts = get_posts(&assets, &bios);
 
     copy_statics(&assets, &out);
     write(SiteRootPage, &out);
@@ -126,6 +132,10 @@ fn main() {
     for post in posts.into_iter() {
         let output_path = out.join("blog").join(&post.id);
         write(PostPage { post }, &output_path);
+    }
+    for bio in bios.into_iter() {
+        let output_path = out.join("bios").join(&bio.id);
+        write(BioPage { bio }, &output_path);
     }
 
     let end = std::time::Instant::now();

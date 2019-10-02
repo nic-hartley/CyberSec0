@@ -1,6 +1,6 @@
 > name: Nic Hartley
 > email: nic@cybers.eco
-> site: https://cybers.eco/
+> site: cybers.eco
 ---
 
 Nic Hartley is about to graduate college, and is going into infosec.
