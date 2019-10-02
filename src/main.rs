@@ -1,7 +1,4 @@
-use std::{
-    fs,
-    path::Path,
-};
+use std::{fs, path::Path};
 
 extern crate walkdir;
 use walkdir::WalkDir;
@@ -93,7 +90,7 @@ struct SiteRootPage;
 #[derive(Template)]
 #[template(path = "blog_index.html")]
 struct BlogIndexPage<'a, 'b> {
-    posts: &'a [Post<'b>]
+    posts: &'a [Post<'b>],
 }
 
 #[derive(Template)]
