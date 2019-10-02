@@ -4,7 +4,7 @@
 
 {% block body %}
   <h1>{{ post.title }}</h1>
-  <div class="byline">by {{ post.author }}</div>
+  <div class="byline">by <a href="/bios/{{ post.author.id }}">{{ post.author.name }}</a></div>
   <ul class="tags">
     {% for tag in post.tags %}
       <li>{{ tag }}</li>

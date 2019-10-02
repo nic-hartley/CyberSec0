@@ -1,6 +1,6 @@
 > name: Nic Hartley
 > email: nic@cybers.eco
-> twitter: @cyber_sec_0
+> site: https://cybers.eco/
 ---
 
 Nic Hartley is about to graduate college, and is going into infosec.
