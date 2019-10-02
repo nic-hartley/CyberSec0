@@ -21,6 +21,7 @@ struct Bio {
     name: String,
     email: String,
     site: String,
+    role: String,
     body: String,
 }
 
@@ -29,12 +30,13 @@ fn get_bios(assets: &Path) -> Vec<Bio> {
     for bio_file in fs::read_dir(assets.join("bios")).unwrap() {
         let bio_file = bio_file.unwrap().path();
         let id = bio_file.file_stem().unwrap().to_str().unwrap().into();
-        let (props, body) = parse_hmd_file(&bio_file);
+        let (mut props, body) = parse_hmd_file(&bio_file);
         authors.push(Bio {
             id,
-            name: props["name"].clone(),
-            email: props["email"].clone(),
-            site: props["site"].clone(),
+            name: props.remove("name").unwrap(),
+            email: props.remove("email").unwrap(),
+            site: props.remove("site").unwrap(),
+            role: props.remove("role").unwrap(),
             body,
         });
     }
@@ -56,12 +58,12 @@ fn get_posts<'a>(assets: &Path, authors: &'a [Bio]) -> Vec<Post<'a>> {
     for post_file in fs::read_dir(assets.join("blog")).unwrap() {
         let post_file = post_file.unwrap().path();
         let id = post_file.file_stem().unwrap().to_str().unwrap().into();
-        let (props, body) = parse_hmd_file(&post_file);
-        let author_id = &props["author"];
-        let author = authors.iter().find(|a| &a.id == author_id).unwrap();
+        let (mut props, body) = parse_hmd_file(&post_file);
+        let author_id = props.remove("author").unwrap();
+        let author = authors.iter().find(|a| a.id == author_id).unwrap();
         posts.push(Post {
             id,
-            title: props["title"].clone(),
+            title: props.remove("title").unwrap(),
             author: author,
             tags: props["tags"].split(',').map(Into::into).collect(),
             body,
@@ -95,15 +97,21 @@ struct BlogIndexPage<'a, 'b> {
 }
 
 #[derive(Template)]
-#[template(path = "bio.html")]
-struct BioPage {
-    bio: Bio,
-}
-
-#[derive(Template)]
 #[template(path = "post.html")]
 struct PostPage<'a> {
     post: Post<'a>,
+}
+
+#[derive(Template)]
+#[template(path = "about.html")]
+struct AboutPage<'a> {
+    bios: &'a [Bio],
+}
+
+#[derive(Template)]
+#[template(path = "bio.html")]
+struct BioPage {
+    bio: Bio,
 }
 
 fn write<T: askama::Template>(template: T, path: &Path) {
@@ -133,6 +141,7 @@ fn main() {
         let output_path = out.join("blog").join(&post.id);
         write(PostPage { post }, &output_path);
     }
+    write(AboutPage { bios: &bios }, &out.join("about"));
     for bio in bios.into_iter() {
         let output_path = out.join("bios").join(&bio.id);
         write(BioPage { bio }, &output_path);

@@ -1,0 +1,15 @@
+{% extends "global.html" %}
+
+{% block title %}CyberSec0 Contributors{% endblock %}
+
+{% block body %}
+  <p>This will, eventually, descrybe CyberSec0.</p>
+  <p>For now, it's a placeholder.</p>
+  <h1>Contributors</h1>
+  <p>This site couldn't run without the help of:</p>
+  <ul>
+    {% for bio in bios %}
+      <li><a href="/bios/{{ bio.id }}">{{ bio.name }}</a>: {{ bio.role }}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
