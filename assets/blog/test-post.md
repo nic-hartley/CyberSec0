@@ -27,3 +27,12 @@ Thank you.
 
 - [ ] tasklist
 - [x] complete
+
+```
+Some code here.
+```
+
+```rust
+let language = "rust";
+println!("this code is written in {}", language);
+```
