@@ -1,4 +1,4 @@
-{% extends "global.html" %}
+{% extends "global.html.tplt" %}
 
 {% block title %}{{ post.title }}{% endblock %}
 {% block category %}Blog{% endblock %}

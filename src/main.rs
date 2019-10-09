@@ -84,35 +84,35 @@ fn copy_statics(assets: &Path, out: &Path) {
 }
 
 #[derive(Template)]
-#[template(path = "site_root.html")]
+#[template(path = "site_root.html.tplt", escape = "none")]
 struct SiteRootPage;
 
 #[derive(Template)]
-#[template(path = "blog_index.html")]
+#[template(path = "blog_index.html.tplt", escape = "none")]
 struct BlogIndexPage<'a, 'b> {
     posts: &'a [Post<'b>],
 }
 
 #[derive(Template)]
-#[template(path = "post.html")]
+#[template(path = "post.html.tplt", escape = "none")]
 struct PostPage<'a> {
     post: Post<'a>,
 }
 
 #[derive(Template)]
-#[template(path = "about.html")]
+#[template(path = "about.html.tplt", escape = "none")]
 struct AboutPage<'a> {
     bios: &'a [Bio],
 }
 
 #[derive(Template)]
-#[template(path = "bio.html")]
+#[template(path = "bio.html.tplt", escape = "none")]
 struct BioPage {
     bio: Bio,
 }
 
 #[derive(Template)]
-#[template(path = "global-styles.css", escape = "none")]
+#[template(path = "global-styles.css.tplt", escape = "none")]
 struct GlobalStylesCSS {
     bounds_bg: &'static str,
     bounds_text: &'static str,
