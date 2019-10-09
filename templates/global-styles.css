@@ -23,7 +23,7 @@ nav a {
   display: table-cell;
   text-align: center;
   color: white;
-  border-right: 1px solid black;
+  border-right: 1px solid {{ main_text }};
   padding: 0.25em;
   font-size: 1.25em;
   text-decoration: none;
@@ -31,6 +31,10 @@ nav a {
 
 nav a:last-child {
   border-right: none;
+}
+
+nav a:hover {
+  background-color: #0002;
 }
 
 main {
@@ -55,7 +59,11 @@ pre code {
 }
 
 footer {
-  border-top: 1px solid black;
+  border-top: 1px solid {{ main_text }};
+}
+
+.social {
+  padding: 0.5em;
 }
 
 .twitter {

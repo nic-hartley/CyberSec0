@@ -33,6 +33,10 @@ nav a:last-child {
   border-right: none;
 }
 
+nav a:hover {
+  background-color: #0002;
+}
+
 main {
   padding: 0.5em;
   background-color: rgb(215, 252, 215);
@@ -56,6 +60,10 @@ pre code {
 
 footer {
   border-top: 1px solid black;
+}
+
+.social {
+  padding: 0.5em;
 }
 
 .twitter {
