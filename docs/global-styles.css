@@ -61,9 +61,13 @@ pre code {
 
 footer {
   border-top: 1px solid black;
+  display: table;
+  table-layout: fixed;
+  width: 100%;
 }
 
-.social {
+footer div {
+  display: table-cell;
   padding: 0.5em;
 }
 
@@ -72,4 +76,8 @@ footer {
   height: 1.2em;
   width: 1.2em;
   transform: translateY(0.2em);
+}
+
+footer .copyright {
+  text-align: right;
 }
