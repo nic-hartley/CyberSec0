@@ -1,6 +1,7 @@
 html {
   background-color: {{ bounds_bg }};
   color: {{ bounds_text }};
+  font-family: 'Open Sans';
 }
 
 body, html {
