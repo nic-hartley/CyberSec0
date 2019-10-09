@@ -111,11 +111,23 @@ struct BioPage {
     bio: Bio,
 }
 
-fn write<T: askama::Template>(template: T, path: &Path) {
-    fs::create_dir_all(path).unwrap();
-    let path = path.join("index.html");
+#[derive(Template)]
+#[template(path = "global-styles.css", escape = "none")]
+struct GlobalStylesCSS {
+    bounds_bg: &'static str,
+    bounds_text: &'static str,
+    main_bg: &'static str,
+    main_text: &'static str,
+}
+
+fn write_exact<T: askama::Template>(template: T, path: &Path) {
+    fs::create_dir_all(path.parent().unwrap()).unwrap();
     let output = fs::File::create(path).unwrap();
     template.render_into(&mut crate::adapt(output)).unwrap();
+}
+
+fn write<T: askama::Template>(template: T, path: &Path) {
+    write_exact(template, &path.join("index.html"))
 }
 
 fn main() {
@@ -133,6 +145,12 @@ fn main() {
 
     copy_statics(&assets, &out);
     write(SiteRootPage, &out);
+    write_exact(GlobalStylesCSS {
+        bounds_bg: "rgb(34, 139, 34)",
+        bounds_text: "white",
+        main_bg: "rgb(215, 252, 215)",
+        main_text: "black",
+    }, &out.join("global-styles.css"));
     write(BlogIndexPage { posts: &posts }, &out.join("blog"));
     for post in posts.into_iter() {
         let output_path = out.join("blog").join(&post.id);

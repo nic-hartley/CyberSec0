@@ -1,3 +1,8 @@
+html {
+  background-color: rgb(34, 139, 34);
+  color: white;
+}
+
 body, html {
   width: 100%;
   margin: 0;
@@ -12,7 +17,6 @@ nav {
   display: table;
   table-layout: fixed;
   width: 100%;
-  background-color: forestgreen;
 }
 
 nav a {
@@ -31,6 +35,8 @@ nav a:last-child {
 
 main {
   padding: 0.5em;
+  background-color: rgb(215, 252, 215);
+  color: black;
 }
 
 a {
@@ -40,8 +46,8 @@ a {
 
 code {
   padding: 0.25em;
-  border-radius: 0.25em 0 0 0.25em;
-  background: #888;
+  border-radius: 0.25em;
+  background: #AAA;
 }
 
 pre code {
@@ -49,7 +55,7 @@ pre code {
 }
 
 footer {
-  border-top: 1px solid #36413E;
+  border-top: 1px solid black;
 }
 
 .twitter {
