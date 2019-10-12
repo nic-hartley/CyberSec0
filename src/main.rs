@@ -112,7 +112,7 @@ struct BioPage {
 }
 
 #[derive(Template)]
-#[template(path = "global-styles.css.tplt", escape = "none")]
+#[template(path = "styles.css.tplt", escape = "none")]
 struct GlobalStylesCSS {
     bounds_bg: &'static str,
     bounds_text: &'static str,
