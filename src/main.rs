@@ -8,11 +8,19 @@ use askama::Template;
 
 extern crate rsass;
 
+extern crate chrono;
+use chrono::prelude::*;
+
 mod write_adapter;
 use write_adapter::adapt;
 
 mod utils;
 use utils::*;
+
+fn get_now() -> String {
+    let now = Local::now();
+    now.format("%Y-%m-%d %H:%M:%S").to_string()
+}
 
 #[derive(Debug)]
 struct Bio {
@@ -116,6 +124,7 @@ struct PostPage<'a> {
 #[template(path = "about.html")]
 struct AboutPage<'a> {
     bios: &'a [Bio],
+    gen_time: String,
 }
 
 #[derive(Template)]
@@ -155,7 +164,7 @@ fn main() {
         let output_path = out.join("blog").join(&post.id);
         write(PostPage { post }, &output_path);
     }
-    write(AboutPage { bios: &bios }, &out.join("about"));
+    write(AboutPage { bios: &bios, gen_time: get_now() }, &out.join("about"));
     for bio in bios.into_iter() {
         let output_path = out.join("bios").join(&bio.id);
         write(BioPage { bio }, &output_path);
