@@ -1,10 +1,12 @@
-use std::{fs, path::Path};
+use std::{fs, io::Write as _, path::Path};
 
 extern crate walkdir;
 use walkdir::WalkDir;
 
 extern crate askama;
 use askama::Template;
+
+extern crate rsass;
 
 mod write_adapter;
 use write_adapter::adapt;
@@ -83,47 +85,49 @@ fn copy_statics(assets: &Path, out: &Path) {
     }
 }
 
+fn compile_styles(assets: &Path, out: &Path) {
+    let compiled = rsass::compile_scss_file(
+        &assets.join("styles").join("styles.scss"),
+        rsass::OutputStyle::Compressed,
+    )
+    .expect("Failed to compile SCSS");
+    let mut of =
+        fs::File::create(out.join("styles.css")).expect("Failed to open file");
+    of.write_all(&compiled).expect("Failed to write to file");
+}
+
 #[derive(Template)]
-#[template(path = "site_root.html.tplt", escape = "none")]
+#[template(path = "site_root.html")]
 struct SiteRootPage;
 
 #[derive(Template)]
-#[template(path = "blog_index.html.tplt", escape = "none")]
+#[template(path = "blog_index.html")]
 struct BlogIndexPage<'a, 'b> {
     posts: &'a [Post<'b>],
 }
 
 #[derive(Template)]
-#[template(path = "post.html.tplt", escape = "none")]
+#[template(path = "post.html")]
 struct PostPage<'a> {
     post: Post<'a>,
 }
 
 #[derive(Template)]
-#[template(path = "about.html.tplt", escape = "none")]
+#[template(path = "about.html")]
 struct AboutPage<'a> {
     bios: &'a [Bio],
 }
 
 #[derive(Template)]
-#[template(path = "bio.html.tplt", escape = "none")]
+#[template(path = "bio.html")]
 struct BioPage {
     bio: Bio,
-}
-
-#[derive(Template)]
-#[template(path = "styles.css.tplt", escape = "none")]
-struct GlobalStylesCSS {
-    bounds_bg: &'static str,
-    bounds_text: &'static str,
-    main_bg: &'static str,
-    main_text: &'static str,
 }
 
 fn write_exact<T: askama::Template>(template: T, path: &Path) {
     fs::create_dir_all(path.parent().unwrap()).unwrap();
     let output = fs::File::create(path).unwrap();
-    template.render_into(&mut crate::adapt(output)).unwrap();
+    template.render_into(&mut adapt(output)).unwrap();
 }
 
 fn write<T: askama::Template>(template: T, path: &Path) {
@@ -144,13 +148,8 @@ fn main() {
     let posts = get_posts(&assets, &bios);
 
     copy_statics(&assets, &out);
+    compile_styles(&assets, &out);
     write(SiteRootPage, &out);
-    write_exact(GlobalStylesCSS {
-        bounds_bg: "rgb(34, 139, 34)",
-        bounds_text: "white",
-        main_bg: "rgb(215, 252, 215)",
-        main_text: "black",
-    }, &out.join("global-styles.css"));
     write(BlogIndexPage { posts: &posts }, &out.join("blog"));
     for post in posts.into_iter() {
         let output_path = out.join("blog").join(&post.id);

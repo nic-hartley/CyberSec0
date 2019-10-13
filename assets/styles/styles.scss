@@ -1,6 +1,8 @@
+@import "colors.scss";
+
 html {
-  background-color: rgb(34, 139, 34);
-  color: white;
+  background-color: $affix-bg;
+  color: $affix-text;
   font-family: 'Open Sans';
 }
 
@@ -24,7 +26,7 @@ nav a {
   display: table-cell;
   text-align: center;
   color: white;
-  border-right: 1px solid black;
+  border-right: 1px solid $main-text;
   padding: 0.25em;
   font-size: 1.25em;
   text-decoration: none;
@@ -40,8 +42,8 @@ nav a:hover {
 
 main {
   padding: 0.5em;
-  background-color: rgb(215, 252, 215);
-  color: black;
+  background-color: $main-bg;
+  color: $main-text;
 }
 
 a {
@@ -52,7 +54,7 @@ a {
 code {
   padding: 0.25em;
   border-radius: 0.25em;
-  background: #AAA;
+  background: $emphasis;
 }
 
 pre code {
@@ -60,7 +62,7 @@ pre code {
 }
 
 footer {
-  border-top: 1px solid black;
+  border-top: 1px solid $main-text;
   display: table;
   table-layout: fixed;
   width: 100%;

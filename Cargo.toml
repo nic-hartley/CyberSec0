@@ -10,3 +10,4 @@ edition = "2018"
 pulldown-cmark = { version = "0.6.0", default-features = false, features = ["simd"] }
 askama = "0.8.0"
 walkdir = "2.2.9"
+rsass = "0.11.2"

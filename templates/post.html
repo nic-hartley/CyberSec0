@@ -1,4 +1,8 @@
-{% extends "global.html.tplt" %}
+{% extends "global.html" %}
+
+{% block head %}
+  <link rel="stylesheet" href="/styles/post.css">
+{% endblock %}
 
 {% block title %}{{ post.title }}{% endblock %}
 {% block category %}Blog{% endblock %}
