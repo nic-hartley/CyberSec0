@@ -3,6 +3,12 @@ use std::{fmt, io};
 // thanks, stephaneyfx: https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=fc473d7fffb1cb07e8e2c6b1dad65ced
 pub struct WriteAdapter<W>(W);
 
+impl<W> WriteAdapter<W> {
+    pub fn unadapt(self) -> W {
+        self.0
+    }
+}
+
 impl<W: io::Write> fmt::Write for WriteAdapter<W> {
     fn write_str(&mut self, s: &str) -> Result<(), fmt::Error> {
         self.0.write_all(s.as_bytes()).map_err(|_| fmt::Error)
