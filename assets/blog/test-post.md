@@ -1,6 +1,7 @@
 > title: This is a test.
 > author: nic
 > tags: test,demo
+> publish: a
 ---
 
 This is a test of the blog posting system. No action is required.
@@ -12,14 +13,14 @@ This is a test of the blog posting system. No action is required.
 Thank you.
 
 - unordered
-  - nested
+    - nested
 - list
-  - child
+    - child
 
 1. ordered
-  2. nested
+    2. nested
 2. list
-  3. child
+    3. child
 
 > blockquote (possibly not rendered until CSS is applied)
 
@@ -28,9 +29,7 @@ Thank you.
 - [ ] tasklist
 - [x] complete
 
-```
-Some code here.
-```
+I have `some code` here.
 
 ```rust
 let language = "rust";

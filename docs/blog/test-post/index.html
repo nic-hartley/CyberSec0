@@ -44,10 +44,16 @@
 </li>
 </ul>
 <ol>
-<li>ordered</li>
+<li>ordered
+<ol start="2">
 <li>nested</li>
-<li>list</li>
+</ol>
+</li>
+<li>list
+<ol start="3">
 <li>child</li>
+</ol>
+</li>
 </ol>
 <blockquote>
 <p>blockquote (possibly not rendered until CSS is applied)</p>
@@ -59,8 +65,7 @@ tasklist</li>
 <li><input disabled="" type="checkbox" checked=""/>
 complete</li>
 </ul>
-<pre><code>Some code here.
-</code></pre>
+<p>I have <code>some code</code> here.</p>
 <pre><code class="language-rust">let language = &quot;rust&quot;;
 println!(&quot;this code is written in {}&quot;, language);
 </code></pre>
@@ -72,6 +77,9 @@ println!(&quot;this code is written in {}&quot;, language);
         Social:
         <a class="twitter" href="https://twitter.com/cyber_sec_0" rel="noopener">
           <img alt="Twitter logo" src="/logos/twitter.svg">
+        </a>
+        <a class="github" href="https://github.com/nic-hartley/CyberSec0" rel="noopener">
+          <img alt="GitHub logo" src="/logos/github.svg">
         </a>
         <!-- These aren't set up yet, but feel free to take a sneak peek!
         <a class="eco" href="https://profiles.eco/cybers?ref=tm" rel="noopener">
