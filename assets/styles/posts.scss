@@ -1,0 +1,26 @@
+ul.tags {
+    padding: 0;
+    margin: 0;
+    font-size: 0;
+
+    li {
+        font-size: initial;
+        display: inline-block;
+        border: 1px solid black;
+        padding: 0.25em;
+
+        &:not(:last-child) {
+            border-right: none;
+        }
+
+        &:first-child {
+            border-top-left-radius: 0.25em;
+            border-bottom-left-radius: 0.25em;
+        }
+
+        &:last-child {
+            border-top-right-radius: 0.25em;
+            border-bottom-right-radius: 0.25em;
+        }
+    }
+}

@@ -60,6 +60,8 @@ main {
   pre code {
     display: block;
   }
+
+  @import "posts.scss";
 }
 
 footer {
