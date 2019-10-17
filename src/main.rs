@@ -19,10 +19,6 @@ use utils::*;
 
 const DATE_FMT: &'static str = "%Y-%m-%d";
 
-fn get_now() -> String {
-    Utc::now().to_rfc2822()
-}
-
 #[derive(Debug)]
 struct Bio {
     id: String,
@@ -174,7 +170,7 @@ fn main() {
     write(
         AboutPage {
             bios: &bios,
-            gen_time: get_now(),
+            gen_time: Utc::now().to_rfc2822(),
         },
         &out.join("about"),
     );
@@ -184,5 +180,5 @@ fn main() {
     }
 
     let end = std::time::Instant::now();
-    println!("Generation took {}us", (end - begin).as_micros());
+    println!("Generation took {}ms", (end - begin).as_millis());
 }
