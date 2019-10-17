@@ -1,7 +1,7 @@
 > title: This is a test.
 > author: nic
 > tags: test,demo
-> publish: a
+> publish: 2019-10-17
 ---
 
 This is a test of the blog posting system. No action is required.

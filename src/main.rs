@@ -1,4 +1,4 @@
-use std::{fs, io::Write as _, path::Path};
+use std::{fs, io::Write as _, path::Path, cmp};
 
 extern crate walkdir;
 use walkdir::WalkDir;
@@ -17,9 +17,10 @@ use write_adapter::adapt;
 mod utils;
 use utils::*;
 
+const DATE_FMT: &'static str = "%Y-%m-%d";
+
 fn get_now() -> String {
-    let now = Local::now();
-    now.format("%Y-%m-%d %H:%M:%S").to_string()
+    Utc::now().to_rfc2822()
 }
 
 #[derive(Debug)]
@@ -56,8 +57,8 @@ struct Post<'a> {
     title: String,
     author: &'a Bio,
     tags: Vec<String>,
+    publish: NaiveDate,
     body: String,
-    // TODO: `created` date automatically somehow?
 }
 
 fn get_posts<'a>(assets: &Path, authors: &'a [Bio]) -> Vec<Post<'a>> {
@@ -66,6 +67,10 @@ fn get_posts<'a>(assets: &Path, authors: &'a [Bio]) -> Vec<Post<'a>> {
         let post_file = post_file.unwrap().path();
         let id = post_file.file_stem().unwrap().to_str().unwrap().into();
         let (mut props, body) = parse_hmd_file(&post_file);
+        let publish =  match props.remove("publish") {
+            Some(s) => NaiveDate::parse_from_str(&s, DATE_FMT).unwrap(),
+            None => continue,
+        };
         let author_id = props.remove("author").unwrap();
         let author = authors.iter().find(|a| a.id == author_id).unwrap();
         posts.push(Post {
@@ -73,9 +78,11 @@ fn get_posts<'a>(assets: &Path, authors: &'a [Bio]) -> Vec<Post<'a>> {
             title: props.remove("title").unwrap(),
             author: author,
             tags: props["tags"].split(',').map(Into::into).collect(),
+            publish,
             body,
         });
     }
+    posts.sort_by_key(|p| cmp::Reverse(p.publish));
     posts
 }
 
@@ -164,7 +171,13 @@ fn main() {
         let output_path = out.join("blog").join(&post.id);
         write(PostPage { post }, &output_path);
     }
-    write(AboutPage { bios: &bios, gen_time: get_now() }, &out.join("about"));
+    write(
+        AboutPage {
+            bios: &bios,
+            gen_time: get_now(),
+        },
+        &out.join("about"),
+    );
     for bio in bios.into_iter() {
         let output_path = out.join("bios").join(&bio.id);
         write(BioPage { bio }, &output_path);
