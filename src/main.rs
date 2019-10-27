@@ -109,7 +109,9 @@ fn compile_styles(assets: &Path, out: &Path) {
 
 #[derive(Template)]
 #[template(path = "site_root.html")]
-struct SiteRootPage;
+struct SiteRootPage {
+    gen_time: String,
+}
 
 #[derive(Template)]
 #[template(path = "blog_index.html")]
@@ -121,13 +123,6 @@ struct BlogIndexPage<'a, 'b> {
 #[template(path = "post.html")]
 struct PostPage<'a> {
     post: Post<'a>,
-}
-
-#[derive(Template)]
-#[template(path = "about.html")]
-struct AboutPage<'a> {
-    bios: &'a [Bio],
-    gen_time: String,
 }
 
 #[derive(Template)]
@@ -161,19 +156,14 @@ fn main() {
 
     copy_statics(&assets, &out);
     compile_styles(&assets, &out);
-    write(SiteRootPage, &out);
+    write(SiteRootPage {
+        gen_time: Utc::now().to_rfc2822(),
+    }, &out);
     write(BlogIndexPage { posts: &posts }, &out.join("blog"));
     for post in posts.into_iter() {
         let output_path = out.join("blog").join(&post.id);
         write(PostPage { post }, &output_path);
     }
-    write(
-        AboutPage {
-            bios: &bios,
-            gen_time: Utc::now().to_rfc2822(),
-        },
-        &out.join("about"),
-    );
     for bio in bios.into_iter() {
         let output_path = out.join("bios").join(&bio.id);
         write(BioPage { bio }, &output_path);
