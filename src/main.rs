@@ -143,16 +143,17 @@ fn write<T: askama::Template>(template: T, path: &Path) {
 
 fn main() {
     let begin = std::time::Instant::now();
-
+    
     let root = Path::new(".");
     let assets = root.join("assets");
     let out = root.join("docs");
+    
+    let bios = get_bios(&assets);
+    let posts = get_posts(&assets, &bios);
+
     fs::create_dir_all(&out).unwrap();
     fs::remove_dir_all(&out).unwrap();
     fs::create_dir(&out).unwrap();
-
-    let bios = get_bios(&assets);
-    let posts = get_posts(&assets, &bios);
 
     copy_statics(&assets, &out);
     compile_styles(&assets, &out);
