@@ -161,9 +161,7 @@ fn main() {
 
     copy_statics(&assets, &out);
     compile_styles(&assets, &out);
-    write(SiteRootPage {
-        gen_time: Utc::now().to_rfc2822(),
-    }, &out);
+    write(SiteRootPage { gen_time: Utc::now().to_rfc2822() }, &out);
     write(ContactPage, &out.join("contact"));
     write(BlogIndexPage { posts: &posts }, &out.join("blog"));
     for post in posts.into_iter() {
