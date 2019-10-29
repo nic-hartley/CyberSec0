@@ -131,6 +131,10 @@ struct BioPage {
     bio: Bio,
 }
 
+#[derive(Template)]
+#[template(path = "contact.html")]
+struct ContactPage;
+
 fn write_exact<T: askama::Template>(template: T, path: &Path) {
     fs::create_dir_all(path.parent().unwrap()).unwrap();
     let output = fs::File::create(path).unwrap();
@@ -160,6 +164,7 @@ fn main() {
     write(SiteRootPage {
         gen_time: Utc::now().to_rfc2822(),
     }, &out);
+    write(ContactPage, &out.join("contact"));
     write(BlogIndexPage { posts: &posts }, &out.join("blog"));
     for post in posts.into_iter() {
         let output_path = out.join("blog").join(&post.id);
