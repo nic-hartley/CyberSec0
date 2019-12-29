@@ -27,7 +27,25 @@
     
   </ul>
 
-  <p>TODO: write this</p>
+  <p>httpserv is a <a href="https://crates.io/crates/httpserv">published</a> HTTP fileserver. It's meant to be a tiny,
+easy-to-install, easy-to-use fileserver for local development of static sites.
+In that regard, it succeeds wonderfully:</p>
+<ul>
+<li>Installation is simple. All you need is <a href="https://rustup.rs/">Rustup</a>, which is easy to install,
+and then it takes one command and under a minute to install httpserv.</li>
+<li>Usage is equally easy. To serve the current directory, all you need is
+<code>httpserv</code> (or <code>httpserv.exe</code>, on WSL) and you're serving those files over
+localhost. If you want to serve another directory, <code>httpserv /path/to/dir</code>
+will do it.</li>
+<li>Because of its simplicity, httpserv starts up almost instantly, and serves
+requests within a millisecond or two. That makes it extremely responsive,
+even when you need to serve dozens of files.</li>
+</ul>
+<p>httpserv is already fairly mature. It serves files as intended, and as quickly
+as I want it to. It only has a couple more bugfixes before the 1.0 release.
+Once that happens, I'll start releasing precompiled executables, to simplify
+installation even further -- just drag-and-drop the executable onto your PATH.</p>
+<p>For more information, see the <a href="https://github.com/nic-hartley/httpserv/blob/master/README.md">readme</a>.</p>
 
 
     </main>
