@@ -4,9 +4,9 @@ use std::{fmt, io};
 pub struct WriteAdapter<W>(W);
 
 impl<W> WriteAdapter<W> {
-    pub fn unadapt(self) -> W {
-        self.0
-    }
+    // pub fn unadapt(self) -> W {
+    //     self.0
+    // }
 }
 
 impl<W: io::Write> fmt::Write for WriteAdapter<W> {
