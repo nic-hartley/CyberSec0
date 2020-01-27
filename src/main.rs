@@ -9,7 +9,7 @@ use askama::Template;
 extern crate rsass;
 
 extern crate chrono;
-use chrono::prelude::*;
+use chrono::{prelude::*, format::strftime};
 
 mod write_adapter;
 use write_adapter::adapt;
@@ -18,6 +18,7 @@ mod utils;
 use utils::*;
 
 const DATE_FMT: &'static str = "%Y-%m-%d";
+const RFC_822_FMT: &'static str = "%a, %d %b %Y %H:%M:%S %Z";
 
 #[derive(Debug)]
 struct Bio {
@@ -110,13 +111,20 @@ fn compile_styles(assets: &Path, out: &Path) {
 #[derive(Template)]
 #[template(path = "site_root.html")]
 struct SiteRootPage {
-    gen_time: String,
+    gen_time: NaiveDateTime,
 }
 
 #[derive(Template)]
 #[template(path = "blog_index.html")]
 struct BlogIndexPage<'a, 'b> {
     posts: &'a [Post<'b>],
+}
+
+#[derive(Template)]
+#[template(path = "rss.xml", print = "code")]
+struct RssFeed<'a, 'b> {
+    posts: &'a [Post<'b>],
+    gen_time: NaiveDateTime,
 }
 
 #[derive(Template)]
@@ -161,9 +169,10 @@ fn main() {
 
     copy_statics(&assets, &out);
     compile_styles(&assets, &out);
-    write(SiteRootPage { gen_time: Utc::now().to_rfc2822() }, &out);
+    write(SiteRootPage { gen_time: Utc::now().naive_local() }, &out);
     write(ContactPage, &out.join("contact"));
     write(BlogIndexPage { posts: &posts }, &out.join("blog"));
+    write_exact(RssFeed { posts: &posts, gen_time: Utc::now().naive_local() }, &out.join("rss.xml"));
     for post in posts.into_iter() {
         let output_path = out.join("blog").join(&post.id);
         write(PostPage { post }, &output_path);
