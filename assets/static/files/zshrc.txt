@@ -1,0 +1,95 @@
+# The following lines were added by compinstall
+
+# Path modifications
+path+=~/.cargo/bin
+export PATH
+fpath+=~/.zfunc
+export FPATH
+
+# zsh options
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_SPACE
+
+zstyle ':completion:*' add-space true
+zstyle ':completion:*' auto-description 'provide %d'
+zstyle ':completion:*' completer _expand _complete _ignored _match _prefix
+zstyle ':completion:*' completions 1
+zstyle ':completion:*' format 'Completing %d'
+zstyle ':completion:*' glob 1
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' ignore-parents parent pwd .. directory
+zstyle ':completion:*' insert-unambiguous false
+zstyle ':completion:*' list-colors ''
+zstyle ':completion:*' list-prompt '%SAt %p: Hit TAB for more, or the character to insert%s'
+zstyle ':completion:*' list-suffixes true
+zstyle ':completion:*' matcher-list '' '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|[._- ]=* r:|=*'
+zstyle ':completion:*' match-original both
+zstyle ':completion:*' max-errors 2
+zstyle ':completion:*' menu select=1
+zstyle ':completion:*' original true
+zstyle ':completion:*' preserve-prefix '//[^/]##/'
+zstyle ':completion:*' select-prompt '%B%l%b'
+zstyle ':completion:*' squeeze-slashes true
+zstyle ':completion:*' substitute 1
+zstyle ':completion:*' verbose true
+zstyle :compinstall filename '/home/nxh/.zshrc'
+
+autoload -Uz compinit
+compinit
+# End of lines added by compinstall
+# Lines configured by zsh-newuser-install
+HISTFILE=~/.zsh_history
+HISTSIZE=1000
+SAVEHIST=1000
+setopt appendhistory beep nomatch
+unsetopt autocd extendedglob notify
+bindkey -e
+# End of lines configured by zsh-newuser-install
+
+git_branch() { git branch 2>/dev/null | sed -e '/^*/!d' -e 's/* \(.*\)/ (\1)/'; }
+precmd() {
+	print -P '%B%F{green}%n%f@%F{014}%m%f %F{red}%~%b'
+	PROMPT='%B%F{yellow}%*%f%b'"$(git_branch)"'> '
+}
+PROMPT_EOL_MARK=$' \e[7mEOF\e[m'
+
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+alias la="ls -Al"
+alias md="mkdir"
+alias rd="rmdir"
+..() {
+  if [ -z "$1" ]; then
+    n=1
+  else
+    n="$1"
+  fi
+  for i in $(seq 1 "$n"); do
+    cd ..
+  done
+}
+mcd() { mkdir "$@" ; cd "$@" ; }
+onfilechange() {
+  dir="$1"
+  shift
+  # -t 60 so that, just in case we miss something, we never go *too* long without running
+  # || true because if it times out, it'll return a positive error code, and the loop breaks
+  while inotifywait -qqe modify --exclude '.git|target' -r "$dir" -t 60 || true
+  do
+    echo -n 'Working on '\'"$@"\''... '
+    "$@" >/dev/null 2>&1
+    echo 'done'
+  done
+}
+alias sudosh="sudo zsh"
+alias btctl="bluetoothctl"
+
+bindkey "[3~" delete-char
+bindkey "" backward-delete-word
+bindkey "[3;5~" delete-word
+bindkey "[1;5D" backward-word
+bindkey "[1;5C" forward-word
+
+export GPG_TTY="$(tty)"
