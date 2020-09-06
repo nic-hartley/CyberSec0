@@ -60,19 +60,25 @@ struct Post<'a> {
 
 fn get_posts<'a>(assets: &Path, authors: &'a [Bio]) -> Vec<Post<'a>> {
     let mut posts = vec![];
+    let today = Utc::now().naive_local().date();
     for post_file in fs::read_dir(assets.join("blog")).unwrap() {
         let post_file = post_file.unwrap().path();
         let id = post_file.file_stem().unwrap().to_str().unwrap().into();
         let (mut props, body) = parse_hmd_file(&post_file);
-        let publish =  match props.remove("publish") {
+        let publish = match props.remove("publish") {
             Some(s) => NaiveDate::parse_from_str(&s, DATE_FMT).unwrap(),
             None => continue,
         };
+        let title = props.remove("title").unwrap();
+        if publish > today {
+            println!("Found queued post, skipping: {} {:?}", id, title);
+            continue;
+        }
         let author_id = props.remove("author").unwrap();
         let author = authors.iter().find(|a| a.id == author_id).unwrap();
         posts.push(Post {
             id,
-            title: props.remove("title").unwrap(),
+            title,
             author: author,
             tags: props["tags"].split(',').map(Into::into).collect(),
             publish,
