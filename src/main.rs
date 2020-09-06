@@ -9,7 +9,7 @@ use askama::Template;
 extern crate rsass;
 
 extern crate chrono;
-use chrono::{prelude::*, format::strftime};
+use chrono::{prelude::*, /* format::strftime */};
 
 mod write_adapter;
 use write_adapter::adapt;
@@ -18,7 +18,7 @@ mod utils;
 use utils::*;
 
 const DATE_FMT: &'static str = "%Y-%m-%d";
-const RFC_822_FMT: &'static str = "%a, %d %b %Y %H:%M:%S %Z";
+// const RFC_822_FMT: &'static str = "%a, %d %b %Y %H:%M:%S %Z";
 
 #[derive(Debug)]
 struct Bio {
@@ -121,7 +121,7 @@ struct BlogIndexPage<'a, 'b> {
 }
 
 #[derive(Template)]
-#[template(path = "rss.xml", print = "code")]
+#[template(path = "rss.xml")]
 struct RssFeed<'a, 'b> {
     posts: &'a [Post<'b>],
     gen_time: NaiveDateTime,

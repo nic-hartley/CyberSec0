@@ -14,7 +14,7 @@ html {
 }
 
 header {
-  border-bottom: 1px solid black;
+  border-bottom: $border;
 
   nav {
     display: table;
@@ -24,8 +24,8 @@ header {
     a {
       display: table-cell;
       text-align: center;
-      color: white;
-      border-right: 1px solid $main-text;
+      color: $affix-text;
+      border-right: $border;
       padding: 0.25em;
       font-size: 1.25em;
       text-decoration: none;
@@ -35,7 +35,7 @@ header {
       }
   
       &:hover {
-        background-color: #0002;
+        background-color: $affix-bg-hover;
       }
     }
   }
@@ -47,7 +47,7 @@ main {
   color: $main-text;
 
   a {
-    color: blue;
+    color: $link;
     text-decoration: underline;
   }
   
@@ -55,6 +55,11 @@ main {
     padding: 0.25em;
     border-radius: 0.25em;
     background: $emphasis;
+    font-weight: 600;
+    font-size: 1.15em;
+    display: inline-block;
+    transform: translateY(-0.1em);
+    white-space: nowrap;
   }
   
   pre code {
@@ -65,7 +70,7 @@ main {
 }
 
 footer {
-  border-top: 1px solid $main-text;
+  border-top: $border;
   display: table;
   table-layout: fixed;
   width: 100%;
