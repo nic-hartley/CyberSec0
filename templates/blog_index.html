@@ -1,13 +1,13 @@
 {% extends "global.html" %}
 
-{% block title %}Post Index{% endblock %}
-{% block category %}Blog{% endblock %}
+{% block title %}{% block subblog %}{% endblock %} Index{% endblock %}
+{% block category %}{% block subblog %}{% endblock %} Blog{% endblock %}
 
 {% block body %}
-  <p>This will eventually be a pretty blog index. For now, it's a boring list.</p>
+  {%block intro %}<p>The index of {% block subblog %}all{% endblock %} posts</p>{% endblock %}
   <ul>
     {% for post in posts %}
-      <li><a href="/blog/{{ post.id }}">{{ post.title }}</a> - {{ post.publish }}</li>
+      <li><a href="/posts/{{ post.id }}">{{ post.title }}</a> - {{ post.publish }}</li>
     {% endfor %}
   </ul>
 {% endblock %}

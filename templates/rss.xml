@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <rss version="2.0">
   <channel>
-    <title>CyberSec0 Blog</title>
-    <link>https://cybers.eco//blog/rss.xml</link>
-    <description>Nic Hartley's personal blog</description>
+    <title>Red Fennec Dev</title>
+    <link>https://cybers.eco/blog/rss.xml</link>
+    <description>The Red Fennec's Blog</description>
     <language>en-us</language>
     <copyright>Copyright 2018-present Nic Hartley</copyright>
     <lastBuildDate>{{ gen_time.format("%a, %d %b %Y 00:00:00 EST") }}</lastBuildDate>

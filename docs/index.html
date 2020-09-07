@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Home | CyberSec0 </title>
+    <title>Home | Red Fennec Dev</title>
     <link rel="stylesheet" href="/styles.css">
   </head>
   <body>
@@ -18,77 +18,99 @@
     <main>
       
   <h1>
-    Welcome to CyberSec0!
+    Welcome to Red Fennec Dev!
   </h1>
   <h2>Site Guide</h2>
-  <p>
-    Not sure where to go? Most of the content on this site is in two places:
-  </p>
   <ul>
+    <!--
+      Everything commented out is going to be published eventually!
+      I just need to write some content for them first.
+    -->
+    <!--
     <li>
-      <a href="/blog">The blog</a>, which is a standard tech-focused blog.
-      It's also the development blog for a few personal projects:
-      <a href="/blog/munix">µnix</a>, <a href="/blog/mesher">mesher</a>, and
-      <a href="/blog/httpserv">httpserv</a>. When not blogging about those
-      projects, I blog about whatever random things interest me: cryptography,
-      cyberwarfare, embedded programming, linguistics, fur fandom, and
-      information warfare. Ask me about algorithms sometime.
+      <a href="/shoutouts">The shoutouts</a>:
+      Short, semi-regular pieces focusing on the cool things done by people who get targeted with harassment regularly.
+      Whether they're a woman whose managed was emailed saying they're "not technical" enough to be in infosec,
+      a person of color being told they look unprofessional for wearing their hair in cornrows,
+      or a queer person impolitely informed that they were just a diversity hire,
+      I'm listing all the cool shit people have done.
+      I hope it cheers them up!
+      I also hope to highlight the achievements of people who, frankly, don't get anywhere near as much credit as they should.
     </li>
+    -->
+
+    <!--
     <li>
-      My <a href="/demos">demos</a>, which explain, show off, or simulate a
-      bunch of types of attacks, like tab hijacking and buffer overflows.
-      Please note I <em>do not</em> drop 0days as demos. They're all published
-      and well-known techniques, not specific vulns in specific products.
+      <a href="/trustzone">ARM TrustZone Tutorials</a>:
+      Have you ever wanted to know how ARM TrustZone works?
+      Do you want to design with it, but you can't find any good overviews?
+      Then start here!
+      It's a gentle introduction to TrustZone for people with a basic knowledge of embedded development.
+      If you understand MMIO and Assembly well enough to write bare-metal code, you'll do just fine.
+      (If you're looking to <em>hack</em> it, I recommend <a href="https://azeria-labs.com/trusted-execution-environments-tee-and-trustzone/">Azeria's tutorials</a>!)
+    </li>
+    -->
+    
+    <!--
+    <li>
+      <a href="/hpp">HeartPinePhone</a>:
+      One of my favorite projects, HeartPinePhone is an alternative open-source kernel for PinePhones.
+      It focuses on security, privacy, and user control, to the exclusion of almost everything else.
+      It makes use of the HeartPinePhone's hardware design and ARM TrustZone to
+      isolate apps,
+      ensure users have ultimate control,
+      and keep apps away from information they shouldn't have.
+    </li>
+    -->
+
+    <!--
+    <li>
+      <a href="/fiction">Creative writing</a>:
+      I do some writing sometimes.
+      Sometimes I'll publish vignettes that I use to nail down characters.
+      Sometimes they'll just be fight scenes with no further context.
+      Maybe they'll be lore or worldbuilding notes, or even snippets of in-universe books!
+    </li>
+    -->
+
+    <li>
+      <a href="/blog">The blog</a> in general:
+      Want to just see a listing of everything I write?
+      Then the blog index is where you want to go!
+      You can view all of my posts, in chronological order.
+      <!--
+      At some point, I'll add this sentence, probably when I start writing about more than one topic.
+      There are also a bunch of posts on other topics besides the ones above, which you can see gathered <a href="/blog?misc">here</a>.
+      -->
+    </li>
+
+    <li>
+      <a href="/contact">My contact info</a>:
+      Want to get in touch?
     </li>
     <!--
-      An in-progress puzzle! If you want to take a sneak peek, see /puzzle
-      But be aware it's /very/ in-progress. It'll be linked here once it's
-      properly done. Eventually.
+    I don't actually have any demos yet, so this one's hidden for now.
+    When I unhide it, I'll also edit the "blog in general" section.
+    <li>
+      <a href="/demos">The demos</a>:
+      Showcases of various different types of browser-based attacks.
+      None of these are zero-days, or even really <em>vulnerabilities</em>.
+      They're just common techniques to do malicious things to users.
+    </li>
     -->
   </ul>
-  <p>
-    Feel free to <a href="/contact">get in touch</a>, too. Specific notes are
-    on the linked page &mdash; please be sure to follow them, to make sure I get
-    your message.
-  </p>
-  <h2>History</h2>
-  <p>
-    CyberSec0 was 'founded' as part of taking a joke too far.
-  </p>
-  <p>
-    <a href="/bios/nic">I</a> was looking at domain names, specifically
-    cybersecurity-related ones, and noticed that <code>cybers.eco</code> was
-    available. I thought about it for a bit, realized I'd been meaning to make
-    a blog anyway, and decided that I may as well host it there. It's not like
-    I had anything else I'd be using this domain for, after all.
-  </p>
-  <p>
-    But even after deciding to write a blog, I still had to find something to
-    blog <em>about</em>. That's where <a href="/blog/munix">µnix</a>
-    comes in: It's easy to describe, but contains a ton of complexity that'll
-    be fun to explore, and give me plenty of material to write about.
-  </p>
-  <p>
-    Of course, I have other projects. As mentioned above, I also work on
-    <a href="/blog/mesher">mesher</a> and <a href="/blog/httpserv">httpserv</a>,
-    I occasionally blog about developing those. However, µnix has been more
-    fun to work on than the other two, so I focus on it on this blog. At the
-    same time, mesher especially is fun to think about, so it makes a regular
-    appearance as well. httpserv deserves the occasional mention, though there
-    isn't much to talk about, as it's explicitly not meant to be that secure.
-  </p>
   <h2>Technical info</h2>
   <p>
     This site is run on GitHub Pages. The HTML pages served are generated by
-    <a href="://github.com/nic-hartley/CyberSec0">a bit of janky Rust</a>, and
+    <a href="://github.com/nic-hartley/RedFennecDev">a bit of janky Rust</a>, and
     deployed with a <code>git push</code>.
   </p>
   <p>
-    All the HTML and CSS was written by <a href="/bios/nic">Nic</a>, though of
+    All the HTML and CSS was written by <a href="/bio">Nic</a>, though of
     course with plenty of bits and pieces of help from others.
   </p>
   <p>
-    This version of the website was generated at: 2020-09-06 03:40:57.128372164
+    This version of the website was generated at: 2020-09-07 20:30:52.625340557
   </p>
 
     </main>
@@ -98,20 +120,14 @@
         <a class="twitter" href="https://twitter.com/nichartley" rel="noopener">
           <img alt="Twitter logo" src="/logos/twitter.svg">
         </a>
-        <a class="github" href="https://github.com/nic-hartley/CyberSec0" rel="noopener">
+        <a class="github" href="https://github.com/nic-hartley/RedFennecDev" rel="noopener">
           <img alt="GitHub logo" src="/logos/github.svg">
         </a>
-        <!-- These aren't set up yet, but feel free to take a sneak peek!
-        <a class="eco" href="https://profiles.eco/cybers?ref=tm" rel="noopener">
-          <img alt=".eco logo" src="/logos/eco.svg">
-        </a>
-        <a class="instagram" href="https://www.instagram.com/cyber_sec_0/">
-          <img alt="Instagram logo" src="/logos/instagram.svg">
-        </a>
+        <!-- I'm gonna add more social media eventually! For now, though, it's kinda bare.
         -->
       </div>
       <div class="copyright">
-        &copy; Nic Hartley 2019
+        &copy; Nic Hartley 2020
       </div>
     </footer>
   </body>
