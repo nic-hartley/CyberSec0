@@ -69,18 +69,16 @@ fn get_posts<'a>(assets: &Path, authors: &'a [Bio]) -> Vec<Post<'a>> {
             Some(s) => NaiveDate::parse_from_str(&s, DATE_FMT).unwrap(),
             None => continue,
         };
-        let title = props.remove("title").unwrap();
         if publish > today {
-            println!("Found queued post, skipping: {} {:?}", id, title);
+            println!("Post {} scheduled for {}, skipping", id, publish);
             continue;
         }
         let author_id = props.remove("author").unwrap();
-        let author = authors.iter().find(|a| a.id == author_id).unwrap();
         posts.push(Post {
             id,
-            title,
-            author: author,
-            tags: props["tags"].split(',').map(Into::into).collect(),
+            title: props.remove("title").unwrap(),
+            author: authors.iter().find(|a| a.id == author_id).unwrap(),
+            tags: props["tags"].split(',').map(str::trim).map(Into::into).collect(),
             publish,
             body,
         });
