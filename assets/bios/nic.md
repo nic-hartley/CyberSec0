@@ -1,6 +1,6 @@
 > name: Nic Hartley
 > email: nic@cybers.eco
-> site: cybers.eco
+> site: redfennec.dev
 > role: Makes all of the content and content generation tools.
 ---
 
