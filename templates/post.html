@@ -10,7 +10,7 @@
     {% when None %}
       <a class="category" href="/blog">Miscellaneous</a>
   {% endmatch %}
-  <div class="byline">by <a href="/about">Nic Hartley</a></div>
+  <div class="byline">by <a href="/about">Nic Hartley</a> on {{ post.publish }}</div>
 
   {{ post.body|safe }}
 {% endblock %}

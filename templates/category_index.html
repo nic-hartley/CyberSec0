@@ -5,8 +5,12 @@
 {% block body %}
   {{ category.intro|safe }}
   <ul>
-    {% for post in posts %}
-      <li><a href="/posts/{{ post.id }}">{{ post.title }}</a> ({{ post.publish }})</li>
-    {% endfor %}
+    {% if posts.len() == 0 %}
+      <li>There aren't any {{ category.name }} yet!</li>
+    {% else %}
+      {% for post in posts %}
+        <li><a href="/posts/{{ post.id }}">{{ post.title }}</a> ({{ post.publish }})</li>
+      {% endfor %}
+    {% endif %}
   </ul>
 {% endblock %}
