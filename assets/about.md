@@ -1,35 +1,46 @@
-# TODO: Rewrite most of this, convert to present tense
+# About Red Fennec Dev
 
-# Nic Hartley
+Hi! I'm Nic.
+I go by they/them, or just my name.
+Note that it's spelled _without_ a K.
+I'm a professional software developer with a passion for infosec, linguistics, embedded development, firearms...
 
-Nic Hartley is about to graduate college, and is going into infosec.
+Red Fennec Dev is mostly a personal blog, occasionally with some tutorials.
+I take feedback, by email or GitHub issues.
+Note that I'm one person, maintaining this site in my free time.
+If you report an issue, it might take me a while to fix it.
 
-He'd write more, but he has no reason to yet.
+If you're curious what's available on this site, that's all explained on [the homepage][home].
 
 ## Contact info
 
-No matter how you get in touch, please be explicitly clear about why
-you're doing it. I can be, and usually am, oblivious. If you want help, be
-sure to be clear about your problem. If you want mentorship, be clear
-about what subject.
+No matter how you get in touch, be explicitly clear about why you're doing it.
+I'm oblivious.
+If you want help, be sure to be clear about your problem.
+If you want mentorship, be clear about what subject.
+If you want to talk about one of my projects, consider raising an issue in the relevant repo instead.
 
-If you've found a bug or want a change in any of my projects on GitHub,
-please use their respective GitHub issues. It's much easier to track
-progress there than in my email.
+Also, be patient.
+I'm just one person, and I've got a full-time job and other committments.
+I probably won't reply with any urgency.
 
-Likewise, if you have an issue with this site, please submit an issue to
-[its repo][this-repo].
+When you contact me, please include the exact string "hexagoanl", so I know you've read this page carefully.
+I recommend copy-pasting it.
 
-The best and most reliable way to get in touch with me personally is by
-email: [nic@cybers.eco][my-email]. Failing that,
-my [Twitter][my-twitter] DMs are always
-open. That email is powered by ProtonMail, so you can probably trust it.
+If you've got a question or comment about the actual content, please [raise an issue][issues].
+If it's something about the hosting, please [let GitHub know][gh-support] directly.
 
-Finally, I do have a phone number and a Discord. However, I don't give out
-either publicly, and I have my DMs closed on Discord. If you'd like to use
-either of those platforms, email me, and we can talk about it. Expect me
-to be suspicious of or outright hostile to the idea, though.
+My email is [nic@cybers.eco][my-email].
+It runs on ProtonMail, so it can generally be trusted as far as I can.
 
- [this-repo]: https://github.com/nic-hartley/RedFennecDev
- [my-email]: mailto:nic@cybers.eco
- [my-twitter]: https://twitter.com/nichartley
+You can DM or @ me on [Twitter][my-twitter] as well.
+
+I do also have moth a phone number and a Discord handle.
+However, I'm reluctant to hand out either to anyone.
+If you have an extremely good reason, email me about it, but expect me to be outright hostile to the idea.
+
+  [home]: /
+  [issues]: https://github.com/nic-hartley/RedFennecDev/issues
+  [my-email]: mailto:nic@cybers.eco
+  [my-twitter]: https://twitter.com/nichartley
+  [gh-support]: https://support.github.com/
