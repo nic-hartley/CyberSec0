@@ -3,20 +3,19 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}{% endblock %} | Red Fennec Dev</title>
+    <title>{% block title %}{{ title }}{% endblock %} | Red Fennec Dev</title>
     <link rel="stylesheet" href="/styles.css">
   </head>
   <body>
     <header>
       <nav>
-        <a href="/"><img src="/logos/rfd.svg" alt="Red Fennec Dev logo" title="Red Fennec Dev"></a>
+        <a href="/"><img src="/logos/rfd.svg" alt="Home" title="Red Fennec Dev"></a>
         <a href="/blog">Blog</a>
-        <a href="/demos">Demos</a>
         <a href="/contact">Contact</a>
       </nav>
     </header>
     <main>
-      {% block body %}{% endblock %}
+      {% block body %}{{ body|safe }}{% endblock %}
     </main>
     <footer>
       <div class="social">

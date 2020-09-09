@@ -1,0 +1,12 @@
+{% extends "global.html" %}
+
+{% block title %}{{ category.name|capitalize }} Index{% endblock %}
+
+{% block body %}
+  {{ category.intro|safe }}
+  <ul>
+    {% for post in posts %}
+      <li><a href="/posts/{{ post.id }}">{{ post.title }}</a> ({{ post.publish }})</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

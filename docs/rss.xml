@@ -2,11 +2,11 @@
 <rss version="2.0">
   <channel>
     <title>Red Fennec Dev</title>
-    <link>https://redfennec.dev/blog/rss.xml</link>
+    <link>https://redfennec.dev/rss.xml</link>
     <description>The Red Fennec's Blog</description>
     <language>en-us</language>
     <copyright>Copyright 2018-present Nic Hartley</copyright>
-    <lastBuildDate>Tue, 08 Sep 2020 00:00:00 EST</lastBuildDate>
+    <lastBuildDate>Wed, 09 Sep 2020 00:00:00 EST</lastBuildDate>
     <ttl>120</ttl>
     <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
     <generator>Nic's custom BS</generator>

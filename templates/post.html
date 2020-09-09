@@ -4,12 +4,13 @@
 
 {% block body %}
   <h1>{{ post.title }}</h1>
-  <div class="byline">by <a href="/bios/{{ post.author.id }}">{{ post.author.name }}</a></div>
-  <ul class="tags">
-    {% for tag in post.tags %}
-      <li>{{ tag }}</li>
-    {% endfor %}
-  </ul>
+  {% match post.category %}
+    {% when Some with (category) %}
+      <a class="category" href="/{{ category }}">{{ category|capitalize }}</a>
+    {% when None %}
+      <a class="category" href="/blog">Miscellaneous</a>
+  {% endmatch %}
+  <div class="byline">by <a href="/about">Nic Hartley</a></div>
 
-  {{ post.body | safe }}
+  {{ post.body|safe }}
 {% endblock %}

@@ -8,8 +8,10 @@ use std::{
 extern crate pulldown_cmark;
 use pulldown_cmark::{html, Options, Parser};
 
+use crate::write_adapter::adapt;
+
 // I'd normally return an `io::Read`, but my Markdown library only takes &str
-// also, "HMD" stands for "header'd markdown" -- see assets/blog for examples
+// also, "HMD" stands for "header'd markdown" -- see assets/posts for examples
 pub fn parse_hmd_file(path: &Path) -> (HashMap<String, String>, String) {
     let mut input = io::BufReader::new(fs::File::open(path).unwrap());
     let header = {
@@ -38,8 +40,24 @@ pub fn parse_hmd_file(path: &Path) -> (HashMap<String, String>, String) {
     (header, body)
 }
 
-fn html_from_md(md: String) -> String {
+pub fn html_from_md(md: String) -> String {
     let mut out = String::new();
     html::push_html(&mut out, Parser::new_ext(&md, Options::all()));
     out
+}
+
+pub fn compile_md(in_path: &Path, title: &str, out_dir: &Path) {
+    let markdown = fs::read_to_string(in_path).unwrap();
+    let compiled = html_from_md(markdown);
+    write(crate::GenericPage { title: title.into(), body: compiled }, out_dir);
+}
+
+pub fn write_exact<T: askama::Template>(template: T, path: &Path) {
+    fs::create_dir_all(path.parent().unwrap()).unwrap();
+    let output = fs::File::create(path).unwrap();
+    template.render_into(&mut adapt(output)).unwrap();
+}
+
+pub fn write<T: askama::Template>(template: T, path: &Path) {
+    write_exact(template, &path.join("index.html"))
 }

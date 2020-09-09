@@ -8,8 +8,10 @@ A brief overview of what's on the site.
   Want to just see a listing of everything I write?
   Then the blog index is where you want to go!
   You can view all of my posts, in chronological order.
-- [My contact info](/contact):
+- [My info](/about):
   Want to get in touch?
+  Want to learn about me or Red Fennec Dev?
+  A little weird, but sure!
 
 <!--
 Everything commented out is going to be published eventually!
@@ -55,8 +57,6 @@ deployed with a `git push`.
 
 All the HTML and CSS was written by [Nic](/bio), though of
 course with plenty of bits and pieces of help from others.
-
-This version of the website was generated at: {{ gen_time }}
 
  [azeria-trustzone]: https://azeria-labs.com/trusted-execution-environments-tee-and-trustzone/
  [this-repo]: https://github.com/nic-hartley/RedFennecDev

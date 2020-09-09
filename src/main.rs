@@ -12,7 +12,6 @@ extern crate chrono;
 use chrono::{prelude::*, /* format::strftime */};
 
 mod write_adapter;
-use write_adapter::adapt;
 
 mod utils;
 use utils::*;
@@ -21,47 +20,24 @@ const DATE_FMT: &'static str = "%Y-%m-%d";
 // const RFC_822_FMT: &'static str = "%a, %d %b %Y %H:%M:%S %Z";
 
 #[derive(Debug)]
-struct Bio {
-    id: String,
-    name: String,
-    email: String,
-    site: String,
-    role: String,
-    body: String,
-}
-
-fn get_bios(assets: &Path) -> Vec<Bio> {
-    let mut authors = vec![];
-    for bio_file in fs::read_dir(assets.join("bios")).unwrap() {
-        let bio_file = bio_file.unwrap().path();
-        let id = bio_file.file_stem().unwrap().to_str().unwrap().into();
-        let (mut props, body) = parse_hmd_file(&bio_file);
-        authors.push(Bio {
-            id,
-            name: props.remove("name").unwrap(),
-            email: props.remove("email").unwrap(),
-            site: props.remove("site").unwrap(),
-            role: props.remove("role").unwrap(),
-            body,
-        });
-    }
-    authors
-}
-
-#[derive(Debug)]
-struct Post<'a> {
+struct Post {
     id: String,
     title: String,
-    author: &'a Bio,
-    tags: Vec<String>,
+    category: Option<String>,
     publish: NaiveDate,
     body: String,
 }
 
-fn get_posts<'a>(assets: &Path, authors: &'a [Bio]) -> Vec<Post<'a>> {
+#[derive(Debug, Clone)]
+struct Category {
+    name: String,
+    intro: String,
+}
+
+fn get_posts(dir: &Path) -> Vec<Post> {
     let mut posts = vec![];
     let today = Utc::now().naive_local().date();
-    for post_file in fs::read_dir(assets.join("blog")).unwrap() {
+    for post_file in fs::read_dir(dir).unwrap() {
         let post_file = post_file.unwrap().path();
         let id = post_file.file_stem().unwrap().to_str().unwrap().into();
         let (mut props, body) = parse_hmd_file(&post_file);
@@ -73,18 +49,30 @@ fn get_posts<'a>(assets: &Path, authors: &'a [Bio]) -> Vec<Post<'a>> {
             println!("Post {} scheduled for {}, skipping", id, publish);
             continue;
         }
-        let author_id = props.remove("author").unwrap();
         posts.push(Post {
             id,
             title: props.remove("title").unwrap(),
-            author: authors.iter().find(|a| a.id == author_id).unwrap(),
-            tags: props["tags"].split(',').map(str::trim).map(Into::into).collect(),
+            category: props.remove("category"),
             publish,
             body,
         });
     }
     posts.sort_by_key(|p| cmp::Reverse(p.publish));
     posts
+}
+
+fn get_categories(dir: &Path) -> Vec<Category> {
+    let mut categories = vec![];
+    for cat_file in fs::read_dir(dir).unwrap() {
+        let cat_file = cat_file.unwrap().path();
+        let name = cat_file.file_stem().unwrap().to_str().unwrap().into();
+
+        let md_intro = fs::read_to_string(cat_file).unwrap();
+        let intro = html_from_md(md_intro);
+
+        categories.push(Category { name, intro });
+    }
+    categories
 }
 
 fn copy_statics(assets: &Path, out: &Path) {
@@ -113,48 +101,30 @@ fn compile_styles(assets: &Path, out: &Path) {
 }
 
 #[derive(Template)]
-#[template(path = "site_root.html")]
-struct SiteRootPage {
-    gen_time: NaiveDateTime,
+#[template(path = "global.html")]
+struct GenericPage {
+    title: String,
+    body: String,
 }
 
 #[derive(Template)]
-#[template(path = "blog_index.html")]
-struct BlogIndexPage<'a, 'b> {
-    posts: &'a [Post<'b>],
+#[template(path = "category_index.html")]
+struct CategoryIndex<'a> {
+    category: Category,
+    posts: Vec<&'a Post>,
 }
 
 #[derive(Template)]
 #[template(path = "rss.xml")]
-struct RssFeed<'a, 'b> {
-    posts: &'a [Post<'b>],
+struct RssFeed<'a> {
+    posts: &'a [Post],
     gen_time: NaiveDateTime,
 }
 
 #[derive(Template)]
 #[template(path = "post.html")]
-struct PostPage<'a> {
-    post: Post<'a>,
-}
-
-#[derive(Template)]
-#[template(path = "bio.html")]
-struct BioPage {
-    bio: Bio,
-}
-
-#[derive(Template)]
-#[template(path = "contact.html")]
-struct ContactPage;
-
-fn write_exact<T: askama::Template>(template: T, path: &Path) {
-    fs::create_dir_all(path.parent().unwrap()).unwrap();
-    let output = fs::File::create(path).unwrap();
-    template.render_into(&mut adapt(output)).unwrap();
-}
-
-fn write<T: askama::Template>(template: T, path: &Path) {
-    write_exact(template, &path.join("index.html"))
+struct PostPage {
+    post: Post,
 }
 
 fn main() {
@@ -164,8 +134,9 @@ fn main() {
     let assets = root.join("assets");
     let out = root.join("docs");
     
-    let bios = get_bios(&assets);
-    let posts = get_posts(&assets, &bios);
+    let posts = get_posts(&assets.join("posts"));
+
+    let categories = get_categories(&assets.join("categories"));
 
     fs::create_dir_all(&out).unwrap();
     fs::remove_dir_all(&out).unwrap();
@@ -173,17 +144,28 @@ fn main() {
 
     copy_statics(&assets, &out);
     compile_styles(&assets, &out);
-    write(SiteRootPage { gen_time: Utc::now().naive_local() }, &out);
-    write(ContactPage, &out.join("contact"));
-    write(BlogIndexPage { posts: &posts }, &out.join("blog"));
+
+    compile_md(&assets.join("home.md"), "Home", &out);
+    compile_md(&assets.join("about.md"), "About", &out.join("about"));
+
+    let blog_intro_md = fs::read_to_string(&assets.join("blog_intro.md")).unwrap();
+    let blog_intro = html_from_md(blog_intro_md);
+
     write_exact(RssFeed { posts: &posts, gen_time: Utc::now().naive_local() }, &out.join("rss.xml"));
-    for post in posts.into_iter() {
-        let output_path = out.join("blog").join(&post.id);
-        write(PostPage { post }, &output_path);
+
+    for category in categories {
+        let out_path = out.join(&category.name);
+        let filtered = posts.iter().filter(|p| p.category.as_ref() == Some(&category.name)).collect();
+        write(CategoryIndex { category, posts: filtered }, &out_path);
     }
-    for bio in bios.into_iter() {
-        let output_path = out.join("bios").join(&bio.id);
-        write(BioPage { bio }, &output_path);
+    write(CategoryIndex {
+        category: Category { name: "blog".into(), intro: blog_intro },
+        posts: posts.iter().collect(),
+    }, &out.join("blog"));
+
+    for post in posts.into_iter() {
+        let out_path = out.join("posts").join(&post.id);
+        write(PostPage { post }, &out_path);
     }
 
     let end = std::time::Instant::now();

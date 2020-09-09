@@ -2,7 +2,7 @@
 <rss version="2.0">
   <channel>
     <title>Red Fennec Dev</title>
-    <link>https://redfennec.dev/blog/rss.xml</link>
+    <link>https://redfennec.dev/rss.xml</link>
     <description>The Red Fennec's Blog</description>
     <language>en-us</language>
     <copyright>Copyright 2018-present Nic Hartley</copyright>
@@ -14,8 +14,8 @@
     {% for post in posts %}
       <item>
         <title>{{ post.title }}</title>
-        <link>https://redfennec.dev/blog/{{ post.id }}</link>
-        <author>{{ post.author.email }}</author>
+        <link>https://redfennec.dev/posts/{{ post.id }}</link>
+        <author>nic@cybers.eco</author>
         <pubDate>{{ post.publish.format("%a, %d %b %Y 00:00:00 EST") }}</pubDate>
       </item>
     {% endfor %}
