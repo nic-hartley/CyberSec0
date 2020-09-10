@@ -1,6 +1,6 @@
 {% extends "global.html" %}
 
-{% block title %}{{ category.name|capitalize }} Index{% endblock %}
+{% block title %}Index of {{ category.name|capitalize }}{% endblock %}
 
 {% block body %}
   {{ category.intro|safe }}

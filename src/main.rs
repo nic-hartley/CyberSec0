@@ -159,7 +159,7 @@ fn main() {
         write(CategoryIndex { category, posts: filtered }, &out_path);
     }
     write(CategoryIndex {
-        category: Category { name: "blog".into(), intro: blog_intro },
+        category: Category { name: "blogposts".into(), intro: blog_intro },
         posts: posts.iter().collect(),
     }, &out.join("blog"));
 
