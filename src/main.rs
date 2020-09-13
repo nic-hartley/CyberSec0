@@ -36,7 +36,7 @@ struct Category {
 
 fn get_posts(dir: &Path) -> Vec<Post> {
     let mut posts = vec![];
-    let today = Utc::now().naive_local().date();
+    let today = Local::now().naive_local().date();
     for post_file in fs::read_dir(dir).unwrap() {
         let post_file = post_file.unwrap().path();
         let id = post_file.file_stem().unwrap().to_str().unwrap().into();
@@ -151,7 +151,7 @@ fn main() {
     let blog_intro_md = fs::read_to_string(&assets.join("blog_intro.md")).unwrap();
     let blog_intro = html_from_md(blog_intro_md);
 
-    write_exact(RssFeed { posts: &posts, gen_time: Utc::now().naive_local() }, &out.join("rss.xml"));
+    write_exact(RssFeed { posts: &posts, gen_time: Local::now().naive_local() }, &out.join("rss.xml"));
 
     for category in categories {
         let out_path = out.join(&category.name);
