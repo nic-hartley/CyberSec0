@@ -6,7 +6,7 @@
   {{ category.intro|safe }}
   <ul>
     {% if posts.len() == 0 %}
-      <li>There aren't any {{ category.name }} yet!</li>
+      <li>There aren't any posts here yet!</li>
     {% else %}
       {% for post in posts %}
         <li><a href="/posts/{{ post.id }}">{{ post.title }}</a> ({{ post.publish }})</li>
