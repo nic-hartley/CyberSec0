@@ -4,6 +4,13 @@
 
 A brief overview of what's on the site.
 
+- [HeartPinePhone](/hpp):
+  One of my favorite projects, HeartPinePhone is an alternative open-source kernel for PinePhones.
+  It focuses on security, privacy, and user control, to the exclusion of almost everything else.
+  It makes use of the HeartPinePhone's hardware design and ARM TrustZone to
+  isolate apps,
+  ensure users have ultimate control,
+  and keep apps away from information they shouldn't have.
 - [The shoutouts](/shoutouts):
   Short, semi-regular pieces focusing on the cool things done by people who get targeted with harassment regularly.
   Whether they're a woman whose managed was emailed saying they're "not technical" enough to be in infosec,
@@ -33,13 +40,6 @@ I just need to write some content for them first.
   It's a gentle introduction to TrustZone for people with a basic knowledge of embedded development.
   If you understand MMIO and Assembly well enough to write bare-metal code, you'll do just fine.
   (If you're looking to <em>hack</em> it, I recommend [Azeria's tutorials][azeria-trustzone]!)
-- [HeartPinePhone](/hpp):
-  One of my favorite projects, HeartPinePhone is an alternative open-source kernel for PinePhones.
-  It focuses on security, privacy, and user control, to the exclusion of almost everything else.
-  It makes use of the HeartPinePhone's hardware design and ARM TrustZone to
-  isolate apps,
-  ensure users have ultimate control,
-  and keep apps away from information they shouldn't have.
 - [Creative writing](/fiction):
   I do some writing sometimes.
   Sometimes I'll publish vignettes that I use to nail down characters.
