@@ -155,7 +155,10 @@ fn main() {
 
     for category in categories {
         let out_path = out.join(&category.name);
-        let filtered = posts.iter().filter(|p| p.category.as_ref() == Some(&category.name)).collect();
+        let filtered: Vec<_> = posts.iter().filter(|p| p.category.as_ref() == Some(&category.name)).collect();
+        if filtered.is_empty() {
+            println!("Empty category: {}", category.name);
+        }
         write(CategoryIndex { category, posts: filtered }, &out_path);
     }
     write(CategoryIndex {
