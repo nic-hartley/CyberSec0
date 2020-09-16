@@ -59,11 +59,12 @@ main {
     font-size: 1.15em;
     display: inline-block;
     transform: translateY(-0.1em);
-    white-space: nowrap;
+    white-space: pre;
   }
   
   pre code {
     display: block;
+    white-space: pre-wrap;
   }
 
   @import "posts.scss";
