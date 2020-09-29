@@ -6,11 +6,18 @@
     <description>The Red Fennec's Blog</description>
     <language>en-us</language>
     <copyright>Copyright 2018-present Nic Hartley</copyright>
-    <lastBuildDate>Wed, 16 Sep 2020 00:00:00 EST</lastBuildDate>
+    <lastBuildDate>Tue, 29 Sep 2020 00:00:00 EST</lastBuildDate>
     <ttl>120</ttl>
     <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
     <generator>Nic's custom BS</generator>
     <managingEditor>nic@cybers.eco</managingEditor>
+    
+      <item>
+        <title>Exploring, Part 1: Firmware</title>
+        <link>https://redfennec.dev/posts/hpp-exploration-1</link>
+        <author>nic@cybers.eco</author>
+        <pubDate>Tue, 29 Sep 2020 00:00:00 EST</pubDate>
+      </item>
     
   </channel>
 </rss>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Exploring, Part 1: Firmware | Red Fennec Dev</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="/"><img src="/logos/rfd.svg" alt="Home" title="Red Fennec Dev"></a>
+        <a href="/blog">Blog</a>
+        <a href="/about">About</a>
+      </nav>
+    </header>
+    <main>
+      
+  <h1>Exploring, Part 1: Firmware</h1>
+  
+    
+      <a class="category" href="/hpp">Hpp</a>
+  
+  <div class="byline">by <a href="/about">Nic Hartley</a> on 2020-09-29</div>
+
+  <p>My PinePhone just arrived!
+After a bit of struggle getting SSH working -- I accidentally disabled it in the postmarketOS installer, but luckily it wasn't hard to get back -- I'm successfully in the device.
+This project, of course, is gonna require a lot of research.
+It's also gonna require a lot of design work, which I might talk about later.
+For now, I've got something more viscerally fun:
+Device exploration!</p>
+<p>(Spoiler alert: It starts bad and gets worse.)</p>
+<p>The first thing I need to do is examine how the hardware actually works.
+That's gonna mean at the very least poking through the memory, and maybe poking <em>at</em> the memory, fiddling with MMIO.
+Unfortunately, I can't actually get that to work in postmarketOS.
+Hitting <code>/dev/mem</code> keeps giving me a <code>Bad address</code>, even though I'm hitting addresses that should be valid.
+<code>/dev/mem</code> also has the usual one-meg limit on it.
+All this tells me that, unfortunately, I'm not actually gonna get much exploration done through postmarketOS.</p>
+<p>So, let's get to work on this exploration, then.
+It's gonna be ugly.
+I'm gonna have to write firmware.
+That means it's gonna be a lot slower than I'd hoped.</p>
+<p>Step 1 is a simple one:
+See if I can compile Rust to the right platform.
+Turns out, that's pretty easy!
+All you need to do is <code>rustup target install aarch64-unknown-none</code>.
+SCP that to the phone, run it, and it works!</p>
+<p>Cool!
+Uh.
+Okay, so now things get complicated.
+First, I want to draw your attention to <a href="https://github.com/nic-hartley/HeartPinePhone">the HeartPinePhone git repo</a>.
+There are four subprojects there, but the important one <em>for now</em> is <code>explorer</code>.
+It's... well, custom firmware, sort of, but that's a very grandiose way to put it.
+It's really just whatever random code I want to run on the device, for whatever random exploration I'm trying to do.</p>
+<p>To get it onto my device, I'm first gonna flash <a href="https://github.com/dreemurrs-embedded/Jumpdrive">Jumpdrive</a> onto an SD card.
+That'll let me easily flash the internal memory with my test firmware.
+So let's start exploring!</p>
+<p>Step 1 is just blinking the LED.
+For the sake of education, I'm gonna explain my 
+A quick look at <a href="http://files.pine64.org/doc/PinePhone/PinePhone%20v1.2a%20Released%20Schematic.pdf" title="This is the v1.2a version, which is the one I have. If you have a different model, you should grab that version's schematic. I don't really expect it to change, though.">the PinePhone schematic</a> tells me which pins on the CPU connect to the LED:</p>
+<p><img src="/post-assets/hpp-exploration-1/schematic-led.png" alt="LED2's hookups are listed: PD18 for red, PD19 for green, PD20 for blue." /></p>
+<p>A quick cross-reference between <a href="/post-assets/hpp-exploration-1/schematic-cpu.png">a different part of the schematic</a> and the <a href="/post-assets/hpp-exploration-1/manual-pins.png">relevant part of the user manual</a> leaves me satisfied that PD18 through PD20 are the right pins.
+The manual makes it pretty clear what I (think I) need to do:</p>
+<ul>
+<li>Set PD18 through PD20 to Output by modifying PD_CFG2_REG</li>
+<li>Set the bits for PD18 through PD20 high in PD_DATA_REG</li>
+<li>Loop infinitely (which I'm gonna change soon)</li>
+</ul>
+<p>That's pretty simple:</p>
+<pre><code class="language-rust">unsafe {
+  *(0x1c20874 as *mut u32) = 0x77711177;
+  *(0x1c2087c as *mut u32) = 0x001c0000;
+  loop { }
+}
+</code></pre>
+<p>And now we have the challenge of getting that Rust code to compile to raw bytecode.
+<a href="https://virkkunen.net/">Someone</a> in the <a href="https://discord.gg/aVESxV8">Rust Community discord server</a> pointed me to the <a href="https://github.com/rust-embedded/rust-raspberrypi-OS-tutorials">Rust RPi OS</a> tutorials, which will at least help me convert my Rust ELF binary to bytecode that will work on its own.
+For now, I can just make a quick <code>#![no_std]</code> wrapper -- you can see it <a href="https://github.com/nic-hartley/HeartPinePhone/tree/33462eea4e794c9b9b0a499605dd283c6b28f485">here</a>, as well as the hacky shell script that pulls the actual code out and stuffs it into the right image format.</p>
+<p>Hunting <em>down</em> that image format was a struggle.
+I'm not gonna document it here because it was mostly several days of trying a bunch of things, failing, asking around, not getting answers, and then finally being told by [megi] I'd had the image format right but needed to compile to A32 instead of A64.
+Oops.</p>
+<p>For now, I'm using a Bash script and a tiny third-party tool to massage it into the firmware format.
+I'm gonna be cleaning that up into a separate Rust tool eventually, but for now, I just need to be able to compile to firmware.</p>
+<p>With this, I've got a decent start on my explorer.
+While I was at it, I got vibration working too, since it's the exact same code but for a different pin in the port.</p>
+<p>So, that's enough effort for one blog post.
+I know, not very satisfying, but I've been dragging myself through this for two weeks, and I want to post something!
+I've got a pretty solid roadmap for my next steps, though:</p>
+<ol>
+<li><strong>Power</strong>.
+I want to be able to actually shut off the phone, and it'll give me an excuse dig a bit deeper into how the communication stuff works.
+Plus, I'll need this to use the screen, and probably a few other components as well.</li>
+<li><strong>UART</strong>.
+I don't have the headphone jack serial cable I want yet, which is why power is ahead of this, but once I do, I'll be able to communicate back and forth with the phone.</li>
+<li><strong>64-bit mode</strong>.
+After I have UART, I want things to get fancy.
+I want a loader which, at least for now, will just be getting the CPU into AArch64 mode.
+Eventually it'll handle a bunch more, but for now, switching to 64-bit is all I want.</li>
+<li><strong>USB</strong>.
+This is going to be necessary eventually, for a lot of things.
+For now, I'm just using it as an excuse to start digging into porting Linux driver and kernel code.
+I'm going to have to learn how eventually; I may as well start with something tangentially useful.
+Specifically, I'm gonna try to implement USB as a block device.</li>
+<li><strong>CPU control</strong>.
+Clocking CPUs up higher, turning on more than one, and so on.
+Maybe even splitting processing among cores -- UART on CPU0, USB on CPU1, etc.</li>
+</ol>
+<p>From there, it gets a bit fuzzier.
+I could poke at WiFi, or look at the timers.
+I'm going to try to avoid planning <em>too</em> much.
+I will, however, eventually start maintaining an unordered list of components to make.</p>
+<p>For now, I hope you enjoyed this long, meandering, pointless and anticlimactic blogpost about my suffering!</p>
+
+
+    </main>
+    <footer>
+      <div class="social">
+        Social:
+        <a class="github" href="https://github.com/nic-hartley/RedFennecDev" rel="noopener">
+          <img alt="GitHub logo" title="GitHub" src="/logos/github.svg">
+        </a>
+        <a class="twitter" href="https://twitter.com/nichartley" rel="noopener">
+          <img alt="Twitter logo" title="Twitter" src="/logos/twitter.svg">
+        </a>
+        <a class="rss" href="/rss.xml">
+          <img alt="RSS feed logo" title="RSS feed" src="/logos/rss.svg">
+        </a>
+        <!-- I'm gonna add more social media eventually! For now, though, it's kinda bare.
+        -->
+      </div>
+      <div class="copyright">
+        &copy; Nic Hartley 2020
+      </div>
+    </footer>
+  </body>
+</html>
