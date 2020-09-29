@@ -5,8 +5,21 @@ It's also, admittedly, mostly just a pet project, because I like writing low-lev
 What you'll read here are the posts chronicling my journey through developing it.
 I'm hoping this eventually becomes a roughly weekly thing, but we'll see how life treats me.
 
-One important note is that these posts are very much meant for me.
-You might find them interesting, even educational, and I'll probably word them as though they're tutorials.
-All the same, I'm not going to put much effort into actually making them good, educational content.
-They're just an irregular log of my progress on a pet project.
-Tame your expectations now.
+I want to be clear that these blogposts are meant to be part educational, part insightful, but mostly just for me to keep track of my progress.
+You may find value in reading them.
+You may learn something!
+But mostly, I just want to have a history so I can look back on this in six months and feel pride at how far I've come.
+Or shame at having abandoned the project.
+We'll see.
+
+You may also be interested in:
+
+- [The HeartPinePhone repo][repo]
+- [The phone's schematic][schematic] -- though note that's for the v1.2a revision, which may not match your phone!
+- [The microcontroller's manual][cpu-manual]
+- [The PMIC's manual][pmic-manual]
+
+  [repo]: https://github.com/nic-hartley/HeartPinePhone
+  [cpu-manual]: http://files.pine64.org/doc/datasheet/pine64/Allwinner_A64_User_Manual_V1.0.pdf
+  [schematic]: http://files.pine64.org/doc/PinePhone/PinePhone%20v1.2a%20Released%20Schematic.pdf
+  [pmic-manual]: http://files.pine64.org/doc/datasheet/pine64/AXP803_Datasheet_V1.0.pdf
