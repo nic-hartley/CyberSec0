@@ -30,7 +30,9 @@ struct Post {
 
 #[derive(Debug, Clone)]
 struct Category {
-    name: String,
+    id: String,
+    title: String,
+    postnames: String,
     intro: String,
 }
 
@@ -42,10 +44,7 @@ fn get_posts(dir: &Path) -> Vec<Post> {
         let post_file = entry.path();
         let id = post_file.file_stem().unwrap().to_str().unwrap().into();
         let (mut props, body) = parse_hmd_file(&post_file);
-        let publish = match props.remove("publish") {
-            Some(s) => NaiveDate::parse_from_str(&s, DATE_FMT).unwrap(),
-            None => continue,
-        };
+        let publish = NaiveDate::parse_from_str(&props.remove("publish").unwrap(), DATE_FMT).unwrap();
         if publish > today {
             println!("Post {} scheduled for {}, skipping", id, publish);
             continue;
@@ -66,12 +65,13 @@ fn get_categories(dir: &Path) -> Vec<Category> {
     let mut categories = vec![];
     for cat_file in fs::read_dir(dir).unwrap() {
         let cat_file = cat_file.unwrap().path();
-        let name = cat_file.file_stem().unwrap().to_str().unwrap().into();
+        let id = cat_file.file_stem().unwrap().to_str().unwrap().into();
+        let (mut props, intro) = parse_hmd_file(&cat_file);
 
-        let md_intro = fs::read_to_string(cat_file).unwrap();
-        let intro = html_from_md(md_intro);
+        let title = props.remove("title").unwrap();
+        let postnames = props.remove("postnames").unwrap();
 
-        categories.push(Category { name, intro });
+        categories.push(Category { id, title, postnames, intro });
     }
     categories
 }
@@ -155,15 +155,20 @@ fn main() {
     write_exact(RssFeed { posts: &posts, gen_time: Local::now().naive_local() }, &out.join("rss.xml"));
 
     for category in categories {
-        let out_path = out.join(&category.name);
-        let filtered: Vec<_> = posts.iter().filter(|p| p.category.as_ref() == Some(&category.name)).collect();
+        let out_path = out.join(&category.id);
+        let filtered: Vec<_> = posts.iter().filter(|p| p.category.as_ref() == Some(&category.id)).collect();
         if filtered.is_empty() {
-            println!("Empty category: {}", category.name);
+            println!("Empty category: {}", category.id);
         }
         write(CategoryIndex { category, posts: filtered }, &out_path);
     }
     write(CategoryIndex {
-        category: Category { name: "blogposts".into(), intro: blog_intro },
+        category: Category {
+            id: "".into(),
+            title: "Red Fennec's Blog".into(),
+            postnames: "posts".into(),
+            intro: blog_intro
+        },
         posts: posts.iter().collect(),
     }, &out.join("blog"));
 

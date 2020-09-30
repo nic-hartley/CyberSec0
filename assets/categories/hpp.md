@@ -1,3 +1,7 @@
+> title: HeartPinePhone
+> postnames: HeartPinePosts
+---
+
 HeartPinePhone is a project of mine.
 I could give you the fancy pitch, but that's all in [the README] anyway, if you really care.
 Long story short: HPP is an OS for PinePhone that you can trust.

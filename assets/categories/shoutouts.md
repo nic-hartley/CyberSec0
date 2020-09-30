@@ -1,3 +1,7 @@
+> title: Shoutouts
+> postnames: shoutouts
+---
+
 Shoutouts are blog posts about people who do cool stuff.
 They're an attempt to balance out a little bit of the harassment that the people get.
 When someone gets called "not technical enough", I write up a list of all the cool shit they've done.

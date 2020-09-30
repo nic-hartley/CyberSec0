@@ -1,12 +1,14 @@
 {% extends "global.html" %}
 
-{% block title %}Index of {{ category.name|capitalize }}{% endblock %}
+{% block title %}Index of {{ category.postnames }}{% endblock %}
 
 {% block body %}
+  <h1>{{ category.title }}</h1>
   {{ category.intro|safe }}
+  <h2>Posts</h2>
   <ul>
     {% if posts.len() == 0 %}
-      <li>There aren't any posts here yet!</li>
+      <li>There aren't any {{ category.postnames }} here yet!</li>
     {% else %}
       {% for post in posts %}
         <li><a href="/posts/{{ post.id }}">{{ post.title }}</a> ({{ post.publish }})</li>
