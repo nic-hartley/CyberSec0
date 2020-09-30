@@ -12,12 +12,15 @@ But mostly, I just want to have a history so I can look back on this in six mont
 Or shame at having abandoned the project.
 We'll see.
 
-You may also be interested in:
+You may also be interested in some resources about the PinePhone:
 
 - [The HeartPinePhone repo][repo]
 - [The phone's schematic][schematic] -- though note that's for the v1.2a revision, which may not match your phone!
 - [The microcontroller's manual][cpu-manual]
 - [The PMIC's manual][pmic-manual]
+
+You may want them as you read along with the blogs.
+I reference them a lot and if you don't, some connections might not be obvious.
 
   [repo]: https://github.com/nic-hartley/HeartPinePhone
   [cpu-manual]: http://files.pine64.org/doc/datasheet/pine64/Allwinner_A64_User_Manual_V1.0.pdf
