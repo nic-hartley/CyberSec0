@@ -39,9 +39,6 @@ fn get_posts(dir: &Path) -> Vec<Post> {
     let today = Local::now().naive_local().date();
     for post_file in fs::read_dir(dir).unwrap() {
         let entry = post_file.unwrap();
-        if entry.file_type().unwrap().is_dir() {
-            continue;
-        }
         let post_file = entry.path();
         let id = post_file.file_stem().unwrap().to_str().unwrap().into();
         let (mut props, body) = parse_hmd_file(&post_file);
