@@ -10,6 +10,8 @@ use pulldown_cmark::{html, Options, Parser};
 
 use crate::write_adapter::adapt;
 
+pub const DATE_FMT: &'static str = "%Y-%m-%d";
+
 // I'd normally return an `io::Read`, but my Markdown library only takes &str
 // also, "HMD" stands for "header'd markdown" -- see assets/posts for examples
 pub fn parse_hmd_file(path: &Path) -> (HashMap<String, String>, String) {
@@ -18,7 +20,7 @@ pub fn parse_hmd_file(path: &Path) -> (HashMap<String, String>, String) {
         let mut header = HashMap::new();
         let mut line = String::new();
         while input.read_line(&mut line).unwrap() > 0 {
-            if line == "---\n" {
+            if line.starts_with("---") {
                 break;
             }
             if !line.starts_with("> ") {
@@ -44,12 +46,6 @@ pub fn html_from_md(md: String) -> String {
     let mut out = String::new();
     html::push_html(&mut out, Parser::new_ext(&md, Options::all()));
     out
-}
-
-pub fn compile_md(in_path: &Path, title: &str, out_dir: &Path) {
-    let markdown = fs::read_to_string(in_path).unwrap();
-    let compiled = html_from_md(markdown);
-    write(crate::GenericPage { title: title.into(), body: compiled }, out_dir);
 }
 
 pub fn write_exact<T: askama::Template>(template: T, path: &Path) {
