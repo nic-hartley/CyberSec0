@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Compiling Bare-Metal Rust for PinePhone | Red Fennec Dev</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="/"><img src="/logos/rfd.svg" alt="Home" title="Red Fennec Dev"></a>
+        <a href="/blog">Blog</a>
+        <a href="/about">About</a>
+      </nav>
+    </header>
+    <main>
+      
+  <h1>Compiling Bare-Metal Rust for PinePhone</h1>
+  
+    
+      <a class="category" href="/hpp">Hpp</a>
+  
+  <div class="byline">by <a href="/about">Nic Hartley</a> on 2020-10-30</div>
+
+  <blockquote>
+<p><strong>Note</strong>:
+The way I'm writing this is all relatively clean and linear.
+It was <em>not</em> simple to figure out.
+I did my fursona proud and screamed endlessly for, like, a month and a half.</p>
+</blockquote>
+<p>I got a pleasant surprise:
+My serial cable showed up earlier than expected!
+And now that I've added an extremely cursed 3.5mm-to-USB cable to my collection, I can play with UART.</p>
+<p>Unfortunately, that's going to have to wait.
+See, while I was waiting for the cable, I started cleaning up the code.
+I turned this:</p>
+<pre><code class="language-rust">unsafe {
+  core::ptr::write_volatile(0x01C20874 as *mut u32, 0x77711177);
+  core::ptr::write_volatile(0x01C2087C as *mut u32, 0x001c0000);
+}
+</code></pre>
+<p>into this:</p>
+<pre><code class="language-rust">PD_CFG_REG.index(@).write(0x77711177);
+PD_DATA_REG.write(0x001c0000);
+</code></pre>
+<p>into this:</p>
+<pre><code class="language-rust">hw::led::init();
+hw::led::set(hw::led::Color::White);
+</code></pre>
+<p>In doing so, though, the code no longer works on my hardware.
+After a bit of digging, I've realized that the issue is by no means <em>impossible</em> to solve, but it is a sign that things are going to start getting difficult.
+There are two specific problems:</p>
+<ul>
+<li>Rust, by default, is storing data in <code>.rodata</code>, even for constants that could fit entirely in registers.
+Then it loads out of that part of memory.
+Unfortunately, my extremely basic script just copies the <code>.text</code> section out, so it won't work as-is.
+It won't be impossible to fix, but it will mean a fairly major change to the build script.</li>
+<li>Rust also expects the stack to be set up and usable.
+I'm not sure where the stack pointer is by default, but I'm pretty sure it's not pointing at valid memory.</li>
+</ul>
+<p>Luckily, the solution here is fairly simple.
+I'm going to need to insert a little bit of preamble Assembly to set the stack in the right spot, and building this image is going to get a little more complicated.
+I've been planning out how to do this sort of thing for a while, but I was hoping I could get a <em>little</em> further before I had to.
+Oh well.</p>
+<p>In short, I need a custom linker script -- to make sure everything gets put in the right place in the final binary, for my shell script to be able to yoink it out -- and a custom runtime object, to set things up and call <code>main</code>.
+I can package both into a somewhat janky custom compile target.
+It won't get merged into the mainline anytime soon, but it'll make this compilation quite a lot easier than any of the alternatives.
+As a nice bonus, it'll make my build more repeatable, and (very nearly) eliminate the risk of an internal rustc change breaking things<sup>1</sup>.</p>
+<p>See, up until now, I've just been yoinking the <code>.text</code> section and hoping that the entry point is the beginning of <code>.text</code>, because I'm replacing <code>_start</code>.
+With a custom runtime, <code>hpprt.o</code>, written in Assembly, I can guarantee that <em>that</em> thing's text section starts with the executable code I want.
+The linker script can put the <code>hpprt.o</code>'s <code>.text</code> at the beginning of the output <code>.text</code> section, so that it <em>definitely</em> starts with my executable code.
+Then the runtime can call a main function, and the linker will automatically put things together.</p>
+<p>The linker script will <em>also</em> stuff all of the data that needs to be stored in the firmware into the <code>.text</code> section.
+That keeps the Bash wrapper script nice and simple, since I can just keep pulling out <code>.text</code>, without having to worry about pulling other sections out of the binary and putting them in the right spot in the firmware, to get them loaded into the right spot in memory.</p>
+<p>Finally, the linker script has a <code>.bss</code> section defined, but only so it can calculate where it starts and ends, as <code>__bss_start</code> and <code>__bss_end</code> respectively.
+We'll get to what they're used for and why we need them in a bit.</p>
+<p>Now, for the runtime object:
+It could do a lot.
+I could do most of the startup, load the rest of the kernel, switch to AArch64, and so on.
+There are two issues with that:</p>
+<ol>
+<li>It'd be incredibly complex.
+I want to keep <code>hpprt.o</code> as simple as possible to keep it auditable.
+Implementing all of the startup code in Assembly would make auditing a lot harder.</li>
+<li>It wouldn't get me anything.
+Especially for right now, when I'm just exploring the peripherals, I wouldn't get anything out of a more complex <code>hpprt.o</code>.
+This point might change eventually, but the first won't.</li>
+</ol>
+<p>Instead of anything complex, <code>hpprt.o</code> will do just four things:</p>
+<ul>
+<li>Turn on an LED</li>
+<li>Zero out <code>.bss</code></li>
+<li>Set the stack pointer</li>
+<li>Call <code>k_main</code></li>
+</ul>
+<p>The LED's purpose is simple:
+Give the user instant feedback, as soon as the device is powered on, that the device is on.
+As it progresses through the boot, it'll go through the colors, starting at red on first powerup.</p>
+<p>Zeroing out <code>.bss</code> is a little bit more complex.
+In short, <code>.bss</code> is the section where all of the <em>modifiable</em> global variables go.
+Rust expects the whole region to be zeroed by default.
+Luckily, that's fairly simple.
+Because <code>.bss</code> will always be all zeroes, I don't actually need to store its information.
+I can just define a couple of symbols in my linker script, marking the start and end of <code>.bss</code>, then zero out that memory region.
+Strictly speaking, I don't need it <em>yet</em>, but I expect I will before too long.</p>
+<p>Setting the stack pointer is self-explanatory.
+I just set that to the end of the RAM area, so the stack can grow down into open space.</p>
+<p>Finally, I call <code>k_main</code>.
+It's just a function, exactly the same as any other.
+It serves as my entry point into Rust.
+I called it <code>k_main</code> rather than just <code>main</code> because I expect to have a <em>proper</em> main function; <code>k_main</code> is mostly going to be setting up the platform to be as the kernel expects it.
+At the end, <code>k_main</code> will never return, either by powering off the device or looping infinitely.
+We'll get to how I can guarantee that in a later blogpost, but for now, a TL;DR: <a href="https://doc.rust-lang.org/reference/types/never.html"><code>!</code></a>.</p>
+<p>If you look at the source, you may notice there's some code after the <code>k_main</code> call.
+All it does is rapidly flash the LED, so that if things go <em>really</em> wrong and <code>k_main</code> does return, there's some indication.</p>
+<p>Compiling that against another tiny assembly file, where <code>k_main</code> just returns immediately, does produce the binary I want.
+So I've got all the pieces assembled, and now I just need to make Cargo accept them!</p>
+<p>There are basically four ways to do this.
+In rough order of cleanliness:</p>
+<ol>
+<li>Use a build script which links in <code>hpprt.o</code> and adds the linker script.</li>
+<li>Write a custom target which incorporates the linker script and <code>hpprt.o</code>.</li>
+<li>Switch away from workspaces and configure things through <code>.cargo/config.toml</code>.</li>
+<li>Switch to building with <code>cargo rustc</code> and pass the relevant arguments through that.</li>
+</ol>
+<p>Unfortunately, number 1 doesn't (yet!) work.
+So number 2 it is!
+It's not <em>quite</em> as nice as I'd like.
+It has some paths relative to the working directory of the build command, so it's pretty brittle, but since I wrap the build in a Bash script, and will eventually be wrapping it up in a custom Cargo subcommand, it's something I can fairly simply deal with.
+For now.
+Eventually, I'm hoping to figure out a cleaner solution, or that one gets added.</p>
+<p>Now, naturally, things didn't just work out straightaway.
+I spent a while re-laying-out the target spec format, because I want each target to have a customized spec for itself.
+I also had to hunt down a few bugs in my code.
+I mixed up <code>MOVW</code> and <code>MOVT</code> a few times in my Assembly, and some duplicated bitshifts accidentally zeroed things out.
+Interestingly, the optimizer managed to detect that, and elided the bitshifts entirely.</p>
+<p>I also needed to tweak the linker script a bit, to make room for the boot header.
+See, the A64 boots from a (proprietary, only partly reverse-engineered) disk format.
+It's more-or-less compatible with standard partitioning, but it does mean that more data than I thought is copied the disk.
+In short, the boot header <em>and</em> my code are both copied; I thought it was just my code.
+That left all the pointers offset by a bunch, which broke everything Rust tried to generate.</p>
+<p>Anyway, with all that, I <em>think</em> I have all of my issues fixed.
+I haven't bricked the device, and I've got somewhat complex code actually running.
+From here, I can get to properly exploring the device!
+That's where we'll pick up next time, in this slow and extremely irregular series of blogposts documenting my slow descent into the abyss.</p>
+<p>Happy Halloween!</p>
+<hr />
+<p><small>1:
+Given the level of hackery I'm doing right now, it's basically impossible to code against any sort of officially stabilized interface.
+Technically, a rustc change that breaks things for me could happen whenever.
+However, with the linker script and custom runtime object, I've eliminated a lot of the unknown territory that breakages could come from.
+The target specs are also kept <em>incredibly</em> stable, despite technically not being stabilized, so that's unlikely to change and break.
+</small></p>
+
+
+    </main>
+    <footer>
+      <div class="social">
+        Social:
+        <a class="github" href="https://github.com/nic-hartley/RedFennecDev" rel="noopener">
+          <img alt="GitHub logo" title="GitHub" src="/logos/github.svg">
+        </a>
+        <a class="twitter" href="https://twitter.com/nichartley" rel="noopener">
+          <img alt="Twitter logo" title="Twitter" src="/logos/twitter.svg">
+        </a>
+        <a class="rss" href="/rss.xml">
+          <img alt="RSS feed logo" title="RSS feed" src="/logos/rss.svg">
+        </a>
+        <!-- I'm gonna add more social media eventually! For now, though, it's kinda bare.
+        -->
+      </div>
+      <div class="copyright">
+        &copy; Nic Hartley 2020
+      </div>
+    </footer>
+  </body>
+</html>

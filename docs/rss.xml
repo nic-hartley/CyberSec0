@@ -6,11 +6,18 @@
     <description>The Red Fennec's Blog</description>
     <language>en-us</language>
     <copyright>Copyright 2018-present Nic Hartley</copyright>
-    <lastBuildDate>Fri, 02 Oct 2020 00:00:00 EST</lastBuildDate>
+    <lastBuildDate>Fri, 30 Oct 2020 00:00:00 EST</lastBuildDate>
     <ttl>120</ttl>
     <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
     <generator>Nic's custom BS</generator>
     <managingEditor>nic@cybers.eco</managingEditor>
+    
+      <item>
+        <title>Compiling Bare-Metal Rust for PinePhone</title>
+        <link>https://redfennec.dev/posts/compile-to-pinephone</link>
+        <author>nic@cybers.eco</author>
+        <pubDate>Fri, 30 Oct 2020 00:00:00 EST</pubDate>
+      </item>
     
       <item>
         <title>Exploring, Part 1: Firmware</title>
