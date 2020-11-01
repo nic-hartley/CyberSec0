@@ -134,7 +134,7 @@ Eventually, I'm hoping to figure out a cleaner solution, or that one gets added.
 Now, naturally, things didn't just work out straightaway.
 I spent a while re-laying-out the target spec format, because I want each target to have a customized spec for itself.
 I also had to hunt down a few bugs in my code.
-I mixed up `MOVW` and `MOVT` a few times in my Assembly, and some duplicated bitshifts accidentally zeroed things out.
+I mixed up `MOVW` and `MOVT` a few times in my Assembly, a `BNE` where I wanted a `BLT`, and some duplicated bitshifts accidentally zeroed things out.
 Interestingly, the optimizer managed to detect that, and elided the bitshifts entirely.
 
 I also needed to tweak the linker script a bit, to make room for the boot header.
